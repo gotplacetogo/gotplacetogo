@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Got Place To Go - a live-music field journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root{
+    --ink:#0c0a09; --concrete:#16120f; --bone:#ece8e1;
+    --blood:#d1101b; --gold:#f5b30a; --ash:#3a3633; --muted:#8a827a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--ink);color:var(--bone);font-family:'DM Sans',system-ui,sans-serif;
+    line-height:1.6;overflow-x:hidden;
+    background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 3px);
+  }
+  ::selection{background:var(--blood);color:var(--bone)}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .display{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.5px;line-height:.92}
+  .label{font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.22em;font-size:11px;color:var(--gold)}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:1000;background:rgba(12,10,9,.88);backdrop-filter:blur(8px);border-bottom:3px solid var(--blood)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:20px;letter-spacing:1px;color:var(--bone);text-decoration:none}
+  .brand b{color:var(--blood)}
+  .nav-links{display:flex;gap:24px;align-items:center}
+  .nav-item{position:relative}
+  .nav-links a{font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;text-decoration:none;color:var(--muted);transition:color .15s;white-space:nowrap}
+  .nav-links a:hover{color:var(--bone)}
+  .has-drop>a::after{content:"▾";font-size:9px;margin-left:5px;opacity:.55}
+  .drop{display:none;position:absolute;top:100%;left:-12px;padding-top:10px;min-width:210px;z-index:60}
+  .drop-inner,.drop{flex-direction:column}
+  .nav-item.has-drop:hover .drop{display:flex}
+  .drop>a{display:block;background:var(--ink);border-left:1px solid var(--ash);border-right:1px solid var(--ash);padding:11px 16px;color:var(--muted)}
+  .drop>a:first-child{border-top:2px solid var(--blood)}
+  .drop>a:last-child{border-bottom:1px solid var(--ash)}
+  .drop>a:hover{background:var(--concrete);color:var(--gold)}
+  .lang{display:flex;border:1px solid var(--ash);font-family:'Space Mono',monospace;font-size:11px}
+  .lang button{background:none;border:none;color:var(--muted);padding:6px 9px;cursor:pointer}
+  .lang button.on{background:var(--blood);color:var(--bone);font-weight:700}
+  .burger{display:none;background:none;border:1px solid var(--ash);color:var(--bone);font-size:18px;padding:4px 10px;cursor:pointer}
+
+  /* HERO */
+  .hero{position:relative;padding:72px 0 60px;border-bottom:2px solid var(--ash);overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;opacity:.24;
+    background:radial-gradient(circle at 20% 30%, var(--blood) 0 1.5px, transparent 2px),
+              radial-gradient(circle at 70% 60%, var(--gold) 0 1.5px, transparent 2px);
+    background-size:9px 9px, 13px 13px;}
+  .hero-inner{position:relative;z-index:2}
+  .eyebrow{display:inline-block;background:var(--blood);color:var(--bone);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;transform:rotate(-1.5deg)}
+  .hero h1{font-size:clamp(60px,13.5vw,176px);margin:14px 0 6px;color:var(--bone);letter-spacing:-1px;transform:skewX(-4deg);text-shadow:3px 3px 0 var(--blood),6px 6px 0 var(--ink),9px 9px 0 var(--blood)}
+  .hero h1 span{color:var(--gold);-webkit-text-stroke:2px var(--ink);text-shadow:3px 3px 0 var(--ink),7px 7px 0 var(--blood)}
+  .hero-sub{max-width:620px;color:var(--muted);font-size:17px;line-height:1.6}
+  .stamp{display:inline-flex;margin-top:30px;border:3px solid var(--bone);transform:rotate(-1deg)}
+  .stamp div{padding:12px 22px;border-right:3px solid var(--bone)}
+  .stamp div:last-child{border-right:none}
+  .stamp b{font-family:'Anton',sans-serif;font-size:34px;display:block;line-height:1;color:var(--gold)}
+  .stamp small{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+
+  /* TICKER */
+  .ticker{background:var(--blood);color:var(--ink);overflow:hidden;white-space:nowrap;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
+  .ticker .run{display:inline-block;padding:9px 0;font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;letter-spacing:1px;animation:scroll 36s linear infinite;will-change:transform}
+  .ticker .run span{margin:0 10px}
+  .ticker .run .star{opacity:.45}
+  @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* SECTION SHELL */
+  section{padding:74px 0;border-bottom:1px solid var(--ash);position:relative}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:36px;flex-wrap:wrap}
+  .sec-head .no{font-family:'Space Mono',monospace;color:var(--bone);font-size:13px;font-weight:700;background:var(--blood);padding:3px 8px}
+  .sec-head h2{font-family:'Anton',sans-serif;text-transform:uppercase;font-size:clamp(30px,5vw,52px);color:var(--bone);line-height:.95}
+  .sec-head p{color:var(--muted);font-size:14px;flex-basis:100%;max-width:660px}
+  .sec-head .kicker{flex-basis:100%;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:2px}
+
+  /* STATS */
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--ash)}
+  .stat{background:var(--concrete);padding:24px 22px}
+  .stat:hover{background:#1d1814}
+  .stat .num{font-family:'Anton',sans-serif;font-size:clamp(40px,6.4vw,66px);color:var(--gold);line-height:.9;text-shadow:2px 2px 0 var(--ink)}
+  .stat .cap{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+
+  .records{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--ash);margin-top:2px}
+  .rec{background:var(--concrete);padding:22px}
+  .rec .label{display:block;margin-bottom:8px}
+  .rec .rn{font-family:'Anton',sans-serif;font-size:clamp(20px,2.6vw,30px);color:var(--blood);line-height:1;text-transform:uppercase}
+  .rec .rc{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);margin-top:6px}
+
+  .charts3{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:42px}
+  .charts3 .label{display:block;margin-bottom:16px}
+  .byyear{margin-top:42px}
+  .byyear-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .byyear .label{display:inline-block;margin:0}
+  .yr-toggle{display:inline-flex;border:1px solid var(--ash)}
+  .stat-tabs{margin:6px 0 22px}
+  .yr-toggle button{background:none;border:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:5px 11px;cursor:pointer}
+  .yr-toggle button.on{background:var(--gold);color:var(--ink);font-weight:700}
+  .bar-row{display:flex;flex-direction:column;gap:15px}
+  .bar2 .bn2{font-weight:700;font-size:13px;line-height:1.18;margin-bottom:6px}
+  .bar2 .row2{display:grid;grid-template-columns:1fr 28px;align-items:center;gap:10px}
+  .bar2 .track2{height:12px;background:#241e1a;position:relative}
+  .bar2 .fill2{height:100%;display:block}
+  .bar2 .ct2{font-family:'Space Mono',monospace;color:var(--gold);text-align:right;font-size:12px}
+
+  /* CHALLENGES */
+  .challenge-intro{color:#cfc8bf;max-width:700px;margin-bottom:34px;font-size:15px}
+  .challenge-meters{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:18px}
+  .cm-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:7px}
+  @media(max-width:640px){.challenge-meters{grid-template-columns:1fr;gap:14px}}
+  .challenge-block{margin-top:48px}
+  .challenge-block h3{font-family:'Anton',sans-serif;font-size:26px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+  .challenge-block .sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-bottom:18px;max-width:680px}
+  .sm-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+
+  /* CHALLENGE TRACKER */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px}
+  .tabs button{background:var(--concrete);border:1px solid var(--ash);color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer;transition:all .12s}
+  .tabs button:hover{color:var(--bone)}
+  .tabs button.on{background:var(--blood);border-color:var(--blood);color:var(--bone);font-weight:700}
+  .tabs button.all{margin-left:auto;border-color:var(--gold);color:var(--gold)}
+  .tabs button.all.on{background:var(--gold);color:var(--ink)}
+  .track-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:14px;padding:10px 14px;background:var(--concrete);border:1px solid var(--ash);border-left:4px solid var(--ash);margin-bottom:6px}
+  .track-row.seen{border-left-color:var(--gold)}
+  .track-row .tb{font-family:'DM Sans',sans-serif;font-weight:700;font-size:15px}
+  .track-row .ts{color:var(--muted);font-weight:400}
+  .track-row.seen .tb{color:var(--gold)}
+  .sel{background:var(--ink);border:1px solid var(--ash);color:var(--bone);font-family:'Space Mono',monospace;font-size:11px;padding:6px 8px;cursor:pointer}
+  .track-row.seen .sel{border-color:var(--gold);color:var(--gold)}
+  .sel:focus{outline:2px solid var(--gold)}
+  .sum-grid{border:1px solid var(--ash);border-bottom:none}
+  .sum-row{display:grid;grid-template-columns:1fr 90px 96px;align-items:center;border-bottom:1px solid var(--ash)}
+  .sum-row.head span{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);background:var(--concrete)}
+  .sum-row span{padding:9px 12px;font-size:13px}
+  .sum-row .songs{font-family:'Space Mono',monospace;color:var(--muted);text-align:center}
+  .sum-row .stt{font-family:'Space Mono',monospace;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .sum-row.seen .nm{color:var(--gold);font-weight:700}
+  .sum-row.seen .stt{color:var(--gold)}
+
+  /* READ-ONLY STATUS PILL */
+  .status-pill{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border:1px dashed var(--ash);color:var(--muted);white-space:nowrap}
+  .status-pill.on{background:var(--blood);border:1px solid var(--blood);color:var(--bone)}
+
+  .logo{display:inline-block;width:30px;height:34px;margin-right:11px;vertical-align:middle;flex:none;border:1px dashed #4a443d;border-radius:5px;background:transparent}
+  .brand{display:inline-flex;align-items:center;white-space:nowrap}
+
+  /* PHOTO ROW (3 up) */
+  .photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;justify-items:center}
+
+  /* BUCKET SHOW-ALL */
+  .bl-rank{font-family:'Anton',sans-serif;font-size:18px;color:var(--blood);width:30px;flex:none;text-align:center}
+  .bl-cap{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;margin-bottom:20px}
+  .bl-more{margin-top:18px;text-align:center}
+  .bl-more button{background:var(--concrete);border:1px solid var(--ash);color:var(--gold);font-family:'Space Mono',monospace;font-size:12px;padding:9px 18px;cursor:pointer}
+  .bl-more button:hover{border-color:var(--gold)}
+
+  /* QUOTES (rolling) */
+  .quotes-wrap{min-height:160px;display:flex;align-items:center;justify-content:center;text-align:center}
+  .quote-card{max-width:780px;transition:opacity .5s ease}
+  .quote-card .q{font-family:'Anton',sans-serif;font-size:clamp(24px,4.2vw,42px);text-transform:uppercase;line-height:1.06;color:var(--bone)}
+  .quote-card .q b{color:var(--blood);font-weight:400}
+  .quote-card .qa{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-top:18px}
+
+  /* FAVORITES / HEAVY ROTATION */
+  .fav-years{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
+  .fav-years button{background:var(--concrete);border:1px solid var(--ash);color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer}
+  .fav-years button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
+  .fav-cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .fav-col h4{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;color:var(--gold)}
+  .fav-item{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--ash)}
+  .fav-item .fr{font-family:'Space Mono',monospace;color:var(--blood);font-size:12px;width:22px;flex:none}
+  .fav-item .fa{font-weight:700}
+  .fav-item .ft{color:var(--muted)}
+  .fav-empty{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:10px 0}
+
+  /* MAP */
+  #map{height:460px;border:2px solid var(--ash);background:#10131a}
+  .leaflet-tile{filter:invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%) grayscale(28%)}
+  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--ink);color:var(--bone);border-radius:0;border:1px solid var(--blood)}
+  .leaflet-popup-content{margin:10px 14px;font-family:'DM Sans',sans-serif;font-size:13px}
+  .leaflet-popup-content b{font-family:'Anton',sans-serif;color:var(--gold);letter-spacing:.5px;font-size:15px}
+  .leaflet-container a.leaflet-popup-close-button{color:var(--bone)}
+  .leaflet-popup-scrolled{scrollbar-width:thin;scrollbar-color:var(--blood) #1a1714}
+  .leaflet-popup-scrolled::-webkit-scrollbar{width:9px}
+  .leaflet-popup-scrolled::-webkit-scrollbar-track{background:#1a1714}
+  .leaflet-popup-scrolled::-webkit-scrollbar-thumb{background:var(--blood);border:2px solid #1a1714;border-radius:0}
+  .leaflet-popup-scrolled::-webkit-scrollbar-thumb:hover{background:#ef1722}
+  .leaflet-control-attribution{background:rgba(12,10,9,.7)!important;color:var(--muted)!important}
+  .leaflet-control-attribution a{color:var(--muted)!important}
+  .pin{background:var(--blood);width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid var(--bone);box-shadow:0 0 0 2px var(--blood)}
+  .pop-list{display:block;color:#a99f93;font-size:11px;line-height:1.6;margin-top:6px;font-family:'Space Mono',monospace}
+
+  /* LEDGER */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+  .filters input,.filters select{background:var(--concrete);border:1px solid var(--ash);color:var(--bone);padding:9px 12px;font-family:'Space Mono',monospace;font-size:12px}
+  .filters input{flex:1;min-width:180px}
+  .filters input:focus,.filters select:focus{outline:2px solid var(--gold);border-color:var(--gold)}
+  .stub-list{display:flex;flex-direction:column;gap:10px}
+  .stub{display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:18px;background:var(--concrete);border-left:7px solid var(--blood);padding:14px 18px;transition:transform .12s,background .12s}
+  .stub:hover{transform:translateX(5px) skewX(-2deg);background:#1d1814}
+  .stub .yr{font-family:'Anton',sans-serif;font-size:26px;color:var(--gold)}
+  .stub .dt{display:flex;flex-direction:column;line-height:1}
+  .stub .mo{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .stub .bnd{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.5px;text-transform:uppercase;line-height:1.05}
+  .stub .ven{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
+  .stub .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);border:1px dashed var(--ash);padding:4px 8px;white-space:nowrap}
+  .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
+
+  /* PHOTOS / THE WALL */
+  .carousel{position:relative;display:grid;grid-template-columns:1fr;justify-items:center}
+  .frame{background:#e9e4da;padding:14px 14px 0;box-shadow:6px 8px 0 rgba(0,0,0,.5);transform:rotate(-1.4deg);max-width:520px;width:100%}
+  .frame .pic{aspect-ratio:4/3;background:
+      repeating-linear-gradient(45deg,#2a2521 0 14px,#221d19 14px 28px);
+      display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .frame .pic .ph-band{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,44px);color:rgba(241,179,10,.22);text-transform:uppercase;text-align:center;padding:0 16px;line-height:.95}
+  .frame .pic img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+  .frame .cap{font-family:'Space Mono',monospace;font-size:13px;color:#2a2521;padding:12px 4px 16px;text-align:center}
+  .carousel-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:26px}
+  .carousel-ctrl button{background:var(--concrete);border:1px solid var(--ash);color:var(--bone);font-family:'Space Mono',monospace;font-size:14px;padding:8px 16px;cursor:pointer}
+  .carousel-ctrl button:hover{border-color:var(--gold);color:var(--gold)}
+  .dots{display:flex;gap:7px}
+  .dots i{width:9px;height:9px;background:var(--ash);display:block;cursor:pointer}
+  .dots i.on{background:var(--blood)}
+  .ph-note{text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;margin-top:20px}
+
+  /* PUNK-O-RAMA */
+  .por-meter{margin-bottom:30px}
+  .por-meter .track{height:24px;background:#241e1a;border:1px solid var(--ash);position:relative;overflow:hidden}
+  .por-meter .fill{height:100%;background:repeating-linear-gradient(45deg,var(--blood) 0 10px,#a50d15 10px 20px);width:0;transition:width 1s ease}
+  .por-meter .pct{font-family:'Anton',sans-serif;font-size:14px;position:absolute;right:10px;top:2px;color:var(--bone)}
+  .vol-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .vol{background:var(--concrete);border:1px solid var(--ash);padding:16px 18px}
+  .vol h4{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}
+  .vol h4 .vct{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font-family:'Space Mono',monospace;font-size:11px;padding:4px 9px;border:1px solid var(--ash);color:var(--muted)}
+  .chip.seen{background:var(--blood);border-color:var(--blood);color:var(--bone)}
+  .chip.seen::before{content:"✓ "}
+
+  /* ABOUT */
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:start}
+  .about-layout{display:grid;grid-template-columns:1.55fr .85fr;gap:46px;align-items:start}
+  .about-tagline{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,52px);line-height:1.04;text-transform:uppercase;color:var(--gold);margin-bottom:28px;max-width:22ch}
+  .about-photo{aspect-ratio:3/4;border:2px dashed #4a443d;background:#16130f;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.7;position:sticky;top:90px}
+  @media(max-width:760px){.about-layout{grid-template-columns:1fr;gap:30px}.about-photo{aspect-ratio:4/3;position:static}}
+  .about-prose{max-width:760px}
+  .about-prose p{color:#cfc8bf;font-size:16px;line-height:1.75;margin-bottom:18px}
+  .about-prose .lead{font-size:20px;color:var(--bone)}
+  .about-prose .about-close{font-family:'Space Mono',monospace;color:var(--blood);font-size:15px;letter-spacing:.02em}
+  .about-grid p{margin-bottom:16px;color:#cfc8bf}
+  .about-grid .lead{font-size:20px;color:var(--bone)}
+  .blog-card{background:var(--concrete);border:1px solid var(--ash);padding:22px}
+  .blog-card .label{margin-bottom:10px;display:block}
+  .blog-card h3{font-family:'Anton',sans-serif;font-size:24px;text-transform:uppercase;margin-bottom:8px}
+  .blog-card a{color:var(--gold);font-family:'Space Mono',monospace;font-size:12px;text-decoration:none;border-bottom:1px solid var(--gold)}
+
+  /* FOOTER */
+  footer{padding:48px 0 70px;background:var(--ink);border-top:2px solid var(--blood)}
+  footer .display{font-size:clamp(52px,12vw,140px);color:transparent;-webkit-text-stroke:2px var(--blood);text-align:center;line-height:.86;letter-spacing:-1px}
+  .foot-note{text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;margin-top:18px}
+
+  /* DECORATIVE GRAPHICS */
+  .deco{position:absolute;pointer-events:none;z-index:1}
+  .deco svg{display:block;width:100%;height:100%}
+  .hero .gtl{top:-22px;left:-46px;width:340px;height:118px;transform:rotate(19deg);opacity:.12;color:var(--gold)}
+  .hero .gtr{top:-30px;right:-54px;width:360px;height:124px;transform:scaleX(-1) rotate(19deg);opacity:.12;color:var(--blood)}
+  footer{position:relative;overflow:hidden}
+  footer .wrap{position:relative;z-index:2}
+  footer .skull{top:50%;left:50%;width:210px;height:230px;transform:translate(-50%,-48%);opacity:.07;color:var(--bone);z-index:0}
+  footer .fg-l{bottom:-18px;left:3%;width:300px;height:104px;transform:rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
+  footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
+
+  /* BUCKET LIST */
+  .bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .bl-item{display:flex;align-items:center;gap:14px;background:var(--concrete);border:1px solid var(--ash);border-left:6px solid var(--blood);padding:14px 16px;transition:transform .12s,background .12s}
+  .bl-item:hover{transform:translateX(4px);background:#1d1814}
+  .bl-item .sk{width:24px;height:26px;flex:none;color:var(--gold)}
+  .bl-item .sk svg{width:100%;height:100%;display:block}
+  .bl-name{font-family:'Anton',sans-serif;font-size:19px;letter-spacing:.5px;text-transform:uppercase;line-height:1.02;flex:1}
+  .bl-status{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--ash);color:var(--muted);padding:4px 8px;white-space:nowrap}
+  .bl-item.caught{border-left-color:var(--gold)}
+  .bl-item.caught .bl-name{color:var(--gold);text-decoration:line-through;text-decoration-color:var(--blood)}
+  .bl-item.caught .bl-status{border:none;background:var(--blood);color:var(--bone)}
+
+  /* RESPONSIVE */
+  @media(max-width:880px){
+    .stat-grid,.records{grid-template-columns:repeat(2,1fr)}
+    .charts2,.charts3{grid-template-columns:1fr}
+    .vol-grid{grid-template-columns:1fr}
+    .bl-grid{grid-template-columns:1fr}
+    .photo-row{grid-template-columns:1fr;gap:30px}
+    .fav-cols{grid-template-columns:1fr}
+    .about-grid{grid-template-columns:1fr}
+    .nav-links{display:none;position:absolute;top:62px;left:0;right:0;flex-direction:column;background:var(--ink);padding:18px 24px;border-bottom:2px solid var(--blood);gap:12px}
+    .nav-links.open{display:flex}
+    .nav-item.has-drop:hover .drop,.nav-item .drop{display:flex;position:static;padding-top:6px;min-width:0}
+    .has-drop>a::after{display:none}
+    .drop>a{border:none!important;background:none;padding:5px 0 5px 14px;text-transform:none;letter-spacing:.04em}
+    .drop>a:hover{background:none}
+    .burger{display:block}
+  }
+  @media(max-width:520px){
+    .stat-grid,.records{grid-template-columns:1fr}
+    .stub{grid-template-columns:54px 1fr}
+    .stub .tag{grid-column:2;justify-self:start}
+    .bar{grid-template-columns:minmax(110px,46%) 1fr 26px}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+ <defs>
+  <symbol id="i-guitar" viewBox="0 0 260 90">
+   <g fill="currentColor">
+    <rect x="6" y="38" width="24" height="14" rx="3"/>
+    <circle cx="11" cy="36" r="2.5"/><circle cx="18" cy="35" r="2.5"/><circle cx="25" cy="36" r="2.5"/>
+    <rect x="28" y="41" width="132" height="8" rx="2"/>
+    <circle cx="182" cy="45" r="24"/><circle cx="210" cy="45" r="28"/>
+   </g>
+  </symbol>
+  <symbol id="i-skull" viewBox="0 0 100 110">
+   <path fill="currentColor" fill-rule="evenodd" d="M50 6 C26 6 12 24 12 48 C12 63 19 72 27 78 L27 88 C27 95 33 99 40 98 L41 90 L46 99 L54 99 L59 90 L60 98 C67 99 73 95 73 88 L73 78 C81 72 88 63 88 48 C88 24 74 6 50 6 Z M34 44 C28 44 25 51 30 56 C36 61 43 54 40 47 C39 45 37 44 34 44 Z M66 44 C60 44 57 51 62 56 C68 61 75 54 72 47 C71 45 69 44 66 44 Z M50 58 L43 70 L57 70 Z"/>
+  </symbol>
+ </defs>
+</svg>
+
+<nav>
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand"><span class="logo" title="Logo placeholder"></span>GOT PLACE<b>·</b>TO GO</a>
+    <div style="display:flex;align-items:center;gap:18px">
+      <div class="nav-links" id="navlinks">
+        <div class="nav-item has-drop">
+          <a href="#stats" data-i18n="nav_stats">The Numbers</a>
+          <div class="drop">
+            <a href="#stats" data-stat="top10" data-i18n="nav_top10">Top 10</a>
+            <a href="#stats" data-stat="shows" data-i18n="nav_byshows">Shows by year</a>
+            <a href="#stats" data-stat="bands" data-i18n="nav_bybands">Bands by year</a>
+          </div>
+        </div>
+        <div class="nav-item has-drop">
+          <a href="#ledger" data-i18n="nav_shows">The Journal</a>
+          <div class="drop">
+            <a href="#ledger" data-i18n="nav_ledger">Story of My Life</a>
+            <a href="#map-sec" data-i18n="nav_map">Map</a>
+            <a href="#wall" data-i18n="nav_photos">The Memory Remains</a>
+          </div>
+        </div>
+        <div class="nav-item has-drop">
+          <a href="#bucket" data-i18n="nav_hunt">The Hunt</a>
+          <div class="drop">
+            <a href="#bucket" data-i18n="nav_bucket">Bands to See</a>
+            <a href="#por" data-i18n="nav_por">Punk-O-Rama Challenge</a>
+          </div>
+        </div>
+        <div class="nav-item"><a href="#favorites" data-i18n="nav_fav">The Best Of</a></div>
+        <div class="nav-item"><a href="#about" data-i18n="nav_about">About</a></div>
+      </div>
+      <div class="lang">
+        <button data-lang="en" class="on">EN</button>
+        <button data-lang="pl">PL</button>
+        <button data-lang="es">ES</button>
+      </div>
+      <button class="burger" id="burger" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-inner">
+    <span class="eyebrow" data-i18n="hero_eyebrow">A live-music field journal</span>
+    <h1 class="display">GOT PLACE<br><span>TO GO</span></h1>
+    <p class="hero-sub" data-i18n="hero_sub">Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward. Because "when I've got the music, I've got a place to go."</p>
+    <div class="stamp" id="heroStamp"></div>
+  </div>
+</header>
+
+<div class="ticker"><div class="run" id="ticker"></div></div>
+
+<main>
+
+  <!-- STATS -->
+  <section id="stats">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_stats">Iron Maiden</span>
+        <span class="no">666</span>
+        <h2 data-i18n="stats_title">The Number of the Beast</h2>
+        <p data-i18n="stats_desc">My concert life in numbers.</p>
+      </div>
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="records" id="records"></div>
+
+      <div class="tabs stat-tabs" id="statTabs"></div>
+      <div id="paneTop10">
+        <div class="charts3">
+          <div><span class="label" data-i18n="stats_topbands">Top 10 bands</span><div class="bar-row" id="topBands"></div></div>
+          <div><span class="label" data-i18n="stats_topvenues">Top 10 venues</span><div class="bar-row" id="topVenues"></div></div>
+          <div><span class="label" data-i18n="stats_topcities">Top 10 cities</span><div class="bar-row" id="topCities"></div></div>
+        </div>
+      </div>
+      <div id="paneYear" style="display:none">
+        <div class="bar-row" id="byYear"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section id="map-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_map">Bad Religion</span>
+        <span class="no">01</span>
+        <h2 data-i18n="map_title">I Want to Conquer the World</h2>
+        <p data-i18n="map_desc">Every red marker is a place I've had the pleasure of visiting for some rock'n'roll craziness.</p>
+      </div>
+    </div>
+    <div class="wrap"><div id="map"></div></div>
+  </section>
+
+  <!-- LEDGER -->
+  <section id="ledger">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_ledger">Social Distortion</span>
+        <span class="no">02</span>
+        <h2 data-i18n="ledger_title">Story of My Life</h2>
+        <p data-i18n="ledger_desc">The full history - every night, every line-up. Search it or filter by band, venue or year.</p>
+      </div>
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search band, venue, city...">
+        <select id="fBand"></select>
+        <select id="fVenue"></select>
+        <select id="fYear"></select>
+      </div>
+      <div class="stub-list" id="stubList"></div>
+    </div>
+  </section>
+
+  <!-- THE WALL / PHOTOS -->
+  <section id="wall">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_photos">Metallica</span>
+        <span class="no">03</span>
+        <h2 data-i18n="photos_title">The Memory Remains</h2>
+        <p data-i18n="photos_desc">Shots from the pit and bands I've met. Pulled at random from my photo folder, reshuffled every visit.</p>
+      </div>
+      <div class="photo-row" id="photoRow"></div>
+      <div class="carousel-ctrl">
+        <button id="prevPhoto" aria-label="Previous photos">‹ PREV</button>
+        <div class="dots" id="dots"></div>
+        <button id="nextPhoto" aria-label="Next photos">NEXT ›</button>
+      </div>
+      <p class="ph-note" data-i18n="photos_note">Placeholder frames - drop real photos in the folder and they appear here automatically.</p>
+    </div>
+  </section>
+
+  <!-- BUCKET LIST -->
+  <section id="bucket">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_bucket">The Offspring</span>
+        <span class="no">04</span>
+        <h2 data-i18n="bucket_title">All I Want</h2>
+        <p data-i18n="bucket_desc">The white whales - bands I'm still hunting down. Catch one live and it drops off the list automatically.</p>
+      </div>
+        <p class="bl-cap" id="bucketCap"></p>
+      <div class="bl-more" id="bucketMore"></div>
+      <div class="bl-grid" id="bucketGrid"></div>
+    </div>
+  </section>
+
+  <!-- CHALLENGES -->
+  <section id="por">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="kick_por">Rancid</span>
+        <span class="no">05</span>
+        <h2 data-i18n="por_title">I Wanna Riot</h2>
+      </div>
+      <p class="challenge-intro" data-i18n="challenge_intro">These two compilations are where my punk education began. Somewhere in those tracklists I got the idea to see every band on them live - and started ticking boxes. Some I figured I'd never catch (good luck hearing a 30-second song played live)... but a few came as cool surprises, and I've bagged some, like AFI.</p>
+
+      <div class="challenge-meters">
+        <div class="cm"><span class="cm-label" data-i18n="por_h">Punk-O-Rama</span><div class="por-meter"><div class="track"><div class="fill" id="porMeterFill"></div><span class="pct" id="porMeterPct"></span></div></div></div>
+        <div class="cm"><span class="cm-label" data-i18n="sm_h">Short Music for Short People</span><div class="por-meter"><div class="track"><div class="fill" id="smMeterFill"></div><span class="pct" id="smMeterPct"></span></div></div></div>
+      </div>
+      <div class="tabs" id="albumTabs"></div>
+      <div class="tabpane" id="chPane"></div>
+    </div>
+  </section>
+
+  <!-- FAVORITES / HEAVY ROTATION -->
+  <section id="favorites">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="fav_kick">Sum 41</span>
+        <span class="no">06</span>
+        <h2 data-i18n="fav_title">All Killer No Filler</h2>
+        <p data-i18n="fav_desc">Favourite albums and songs, year by year.</p>
+      </div>
+      <div class="fav-years" id="favYears"></div>
+      <div class="fav-cols" id="favCols"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head"><span class="no">07</span><h2 data-i18n="about_title">About Me</h2></div>
+      <div class="about-layout">
+        <div class="about-text">
+          <p class="about-tagline" data-i18n="about_tag">When I've got the music, I've got a place to go.</p>
+          <div class="about-prose">
+        <p class="lead" data-i18n="about_b2">From the first blast of pure punk energy to the unforgettable rock vibes that stay with me long after the show ends, and the heavy riffs of metal that get my blood pumping, music has always been the fuel that keeps me alive. It's the chaos, the rage, the power, and the soul of everything I do.</p>
+        <p data-i18n="about_b3">I've lived in different parts of the world, and every new city or country has added its own fire to the mix. Whether it's the pulse of a live punk show, the soul of rock, or the energy of a metal gig, every place I've been has had its own sound. Travelling and living in these places means discovering more music, feeling its pulse in every corner, and realising just how deeply music and travel are intertwined. Every new city brings new sounds, new bands, and chances to catch shows I wouldn't have seen otherwise.</p>
+        <p data-i18n="about_b4">This site is where I share that journey - through the anthems that define my life, the concerts that will forever stay in my memory, the cities that shaped me, and the sounds that continue to fuel my passion. Every place, every beat, every show is a chapter in my life's soundtrack.</p>
+        <p class="about-close" data-i18n="about_b5">So let's pump up the volume, turn the page, and explore the music that makes life unforgettable.</p>
+          </div>
+        </div>
+        <div class="about-photo" title="Photo placeholder"><span data-i18n="about_photo">Your photo<br>goes here</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="deco skull"><svg><use href="#i-skull"/></svg></div>
+  <div class="wrap">
+    <div class="display">STAY LOUD</div>
+    <p class="foot-note"><span data-i18n="foot_1">Built and maintained by one fan.</span> <span data-i18n="foot_2">Show data lives in a SharePoint list and feeds this page automatically.</span></p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   DATA  - the ONLY block your live SharePoint feed replaces.
+   Each object = ONE concert row = one city + one venue, with a
+   list of bands you actually saw. Only rows with
+   status:"Ready to Post" are counted.
+   `bands` may be an array OR a delimited string ("A; B; C").
+   ============================================================ */
+const CONFIG = { DATA_URL:"", PHOTOS_URL:"", BUCKET_URL:"", FAV_URL:"", COMPS_URL:"" };   // set each once its SharePoint feed is live
+
+let CONCERTS = [
+  {bands:["Nothing More","Catch Your Breath","Archers"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2026, month:1, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
+  {bands:["Apocalyptica"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2026, month:5, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
+  {bands:["Puscifer","Dave Hill","Puddles Pity Party (Mike Geier)"], venue:"Coca-Cola Roxy", city:"Atlanta", country:"US", year:2026, month:3, lat:33.8901, lng:-84.4682, status:"Ready to Post"},
+  {bands:["Electric Callboy","Polaris","Scene Queen"], venue:"Coca-Cola Roxy", city:"Atlanta", country:"US", year:2026, month:5, lat:33.8901, lng:-84.4682, status:"Ready to Post"},
+  {bands:["Black Label Society","Zakk Sabbath","Dark Chapel"], venue:"Tabernacle", city:"Atlanta", country:"US", year:2026, month:4, lat:33.7596, lng:-84.3915, status:"Ready to Post"},
+  {bands:["Teenage Bottlerocket","Authority Zero","Billy Liar","Billy Batts & the Made Men"], venue:"The Loft", city:"Atlanta", country:"US", year:2026, month:2, lat:33.7918, lng:-84.3873, status:"Ready to Post"},
+  {bands:["The Offspring","Jimmy Eat World","New Found Glory"], venue:"Ameris Bank Amphitheatre", city:"Alpharetta", country:"US", year:2025, month:7, lat:34.0939, lng:-84.2713, status:"Ready to Post"},
+  {bands:["Volbeat","Halestorm","The Ghost Inside"], venue:"Ameris Bank Amphitheatre", city:"Alpharetta", country:"US", year:2025, month:8, lat:34.0939, lng:-84.2713, status:"Ready to Post"},
+  {bands:["Judas Priest","Alice Cooper","Fozzy"], venue:"Ameris Bank Amphitheatre", city:"Alpharetta", country:"US", year:2025, month:9, lat:34.0939, lng:-84.2713, status:"Ready to Post"},
+  {bands:["Metallica","Pantera","Suicidal Tendencies"], venue:"Mercedes-Benz Stadium", city:"Atlanta", country:"US", year:2025, month:6, lat:33.7553, lng:-84.4006, status:"Ready to Post"},
+  {bands:["Blink-182","Vampire Weekend","Alabama Shakes","Devo","Weird Al Yankovic","Fleshwater","4 Non Blondes","Franz Ferdinand"], venue:"Piedmont Park", city:"Mansfield", country:"US", year:2025, month:9, lat:32.5632, lng:-97.1417, status:"Ready to Post"},
+  {bands:["Mammoth WVH","Myles Kennedy","Return To Dust"], venue:"Tabernacle", city:"Atlanta", country:"US", year:2025, month:11, lat:33.7596, lng:-84.3915, status:"Ready to Post"},
+  {bands:["AFI","TR/ST"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2025, month:10, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["GWAR","Helmet","The Dwarves"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2025, month:11, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Puscifer","A Perfect Circle","Primus"], venue:"Ameris Bank Amphitheatre", city:"Alpharetta", country:"US", year:2024, month:4, lat:34.0939, lng:-84.2713, status:"Ready to Post"},
+  {bands:["Megadeth","Mudvayne","All That Remains"], venue:"Atrium Health Amphitheater", city:"Macon", country:"US", year:2024, month:8, lat:32.8366, lng:-83.6299, status:"Ready to Post"},
+  {bands:["MXPX","The Ataris"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2024, month:3, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
+  {bands:["Sepultura","Obituary","Agnostic Front","Claustrofobia"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2024, month:10, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
+  {bands:["Bush","Jerry Cantrell","Candlebox","Bones UK"], venue:"Chastain Park Amphitheater", city:"Atlanta", country:"US", year:2024, month:9, lat:33.8836, lng:-84.3853, status:"Ready to Post"},
+  {bands:["Bad Religion","Social Distortion","The Lovebombs"], venue:"Coca-Cola Roxy", city:"Atlanta", country:"US", year:2024, month:4, lat:33.8901, lng:-84.4682, status:"Ready to Post"},
+  {bands:["Tool"], venue:"State Farm Arena", city:"Atlanta", country:"US", year:2024, month:1, lat:33.7573, lng:-84.3963, status:"Ready to Post"},
+  {bands:["Creed","3 Doors Down","Mammoth WVH"], venue:"State Farm Arena", city:"Atlanta", country:"US", year:2024, month:12, lat:33.7573, lng:-84.3963, status:"Ready to Post"},
+  {bands:["Enter Shikari","Worlds Greatest Dad"], venue:"Terminal West", city:"Atlanta", country:"US", year:2024, month:5, lat:33.7848, lng:-84.4136, status:"Ready to Post"},
+  {bands:["W.A.S.P.","Armored Saint"], venue:"The Eastern", city:"Atlanta", country:"US", year:2024, month:11, lat:33.7461, lng:-84.3656, status:"Ready to Post"},
+  {bands:["Story of the Year","We The Kings","Youth Fountain"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2024, month:1, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Zakk Sabbath","The Native Howl"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2024, month:1, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Teenage Bottlerocket","Billy Batts and the Made Men"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2024, month:2, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["The Exploited","Total Chaos","Rotten Stitches","Tarah Who?"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2024, month:9, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Dead Kennedy's","The Iron Roses","Billy Batts and the Made Men"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2024, month:9, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Green Day","The Smashing Pumpkins","Rancid","Linda Lindas"], venue:"Truist Park", city:"Atlanta", country:"US", year:2024, month:8, lat:33.8908, lng:-84.4677, status:"Ready to Post"},
+  {bands:["The Offspring","Sum 41","Simple Plan"], venue:"Lakewood Amphitheatre", city:"Atlanta", country:"US", year:2023, month:8, lat:33.6889, lng:-84.3872, status:"Ready to Post"},
+  {bands:["Alter Bridge"], venue:"Seminole Hard Rock Hotel & Casino Tampa", city:"Tampa", country:"US", year:2023, month:1, lat:27.9966, lng:-82.3829, status:"Ready to Post"},
+  {bands:["Nita Strauss","Lions at the Gate"], venue:"The Loft", city:"Atlanta", country:"US", year:2023, month:6, lat:33.7918, lng:-84.3873, status:"Ready to Post"},
+  {bands:["Agnostic Front","Murphy's Law","Grade 2"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2023, month:12, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["Less Than Jake","Voodoo Glow Skulls","Devon Kay","New Junk City"], venue:"The Masquerade", city:"Atlanta", country:"US", year:2023, month:7, lat:33.7517, lng:-84.389, status:"Ready to Post"},
+  {bands:["The Stubs","Moonstone"], venue:"Alchemia", city:"Krakow", country:"PL", year:2022, month:2, lat:50.0512, lng:19.9447, status:"Ready to Post"},
+  {bands:["Steve'n'Seagulls"], venue:"Hype Park", city:"Krakow", country:"PL", year:2022, month:5, lat:50.049, lng:19.943, status:"Ready to Post"},
+  {bands:["Anti-Flag","Grade 2"], venue:"Klub Kwadrat", city:"Jelenia Góra", country:"PL", year:2022, month:7, lat:50.0299, lng:19.956, status:"Ready to Post"},
+  {bands:["Poets of the Fall","Tom Lumley & The Brave Liaison"], venue:"Klub Kwadrat", city:"Krakow", country:"PL", year:2022, month:10, lat:50.0299, lng:19.956, status:"Ready to Post"},
+  {bands:["Pidżama Porno"], venue:"Klub Studio", city:"Krakow", country:"PL", year:2022, month:12, lat:50.0681, lng:19.9059, status:"Ready to Post"},
+  {bands:["Social Distortion","Grade 2"], venue:"Progresja", city:"Warsaw", country:"PL", year:2022, month:6, lat:52.247, lng:20.93, status:"Ready to Post"},
+  {bands:["Good Riddance","Useless I.D."], venue:"Stary Klasztor", city:"Wrocław", country:"PL", year:2022, month:6, lat:51.1079, lng:17.0385, status:"Ready to Post"},
+  {bands:["Tool","Brass Against"], venue:"Tauron Arena Kraków", city:"Krakow", country:"PL", year:2022, month:5, lat:50.0676, lng:19.992, status:"Ready to Post"},
+  {bands:["Rancid","Bad Religion","Pennywise","Mad Caddies","The Interrupters"], venue:"Fiddler's Green Amphitheatre", city:"Greenwood Village", country:"US", year:2018, month:9, lat:39.5969, lng:-104.8897, status:"Ready to Post"},
+  {bands:["Airbourne"], venue:"The Academy", city:"County Dublin", country:"IE", year:2017, month:6, lat:53.3489, lng:-6.2615, status:"Ready to Post"},
+  {bands:["Dropkick Murphy's"], venue:"Klub Studio", city:"Krakow", country:"PL", year:2014, month:6, lat:50.0681, lng:19.9059, status:"Ready to Post"},
+  {bands:["Rise Against","The Flatliners"], venue:"Józef Sowiński Park", city:"Warsaw", country:"PL", year:2012, month:6, lat:52.236, lng:20.946, status:"Ready to Post"},
+  {bands:["Black Label Society"], venue:"Klub Studio", city:"Krakow", country:"PL", year:2011, month:6, lat:50.0681, lng:19.9059, status:"Ready to Post"},
+  {bands:["Iron Maiden","Motorhead","Volbeat","Devin Townsend Project","Hunter","Killing Joke"], venue:"Lotnisko, Bemowo", city:"Lotnisko, Bemowo", country:"PL", year:2011, month:6, lat:52.27, lng:20.91, status:"Ready to Post"},
+  {bands:["Alter Bridge","Guano Apes","Perfect","Olaf Deriglasoff"], venue:"Szkoła Główna Gospodarstwa Wiejskiego, Wydział Nauk Humanistycznych", city:"Warsaw", country:"PL", year:2011, month:6, lat:52.2297, lng:21.0122, status:"Ready to Post"},
+  {bands:["Volbeat","Corruption"], venue:"Klub Studencki Loch Ness, Kraków", city:"Krakow", country:"PL", year:2009, month:2, lat:50.061, lng:19.937, status:"Ready to Post"}
+];
+
+/* PHOTOS - sample/placeholder. Replace from your photo folder (see PHOTOS_URL). */
+let PHOTOS = [
+  {band:"NOFX", caption:"Met Fat Mike · Kostrzyn '16"},
+  {band:"Rise Against", caption:"Front row · Kraków '22"},
+  {band:"Bad Religion", caption:"Warsaw '16"},
+  {band:"Groezrock", caption:"Crowd-surf blur · Meerhout '17"},
+  {band:"Dropkick Murphys", caption:"Backstage · Warsaw '20"}
+];
+
+/* FAVOURITE ALBUMS & SONGS BY YEAR (owner-managed) - starter set, edit/extend freely */
+let FAVORITES = [
+  {year:2026, albums:[], songs:[{artist:"Black Label Society", title:"Name in Blood"}]},
+  {year:2015, albums:[{artist:"Enter Shikari", title:"The Mindsweep"},{artist:"Puscifer", title:"Money Shot"}], songs:[]},
+  {year:2003, albums:[{artist:"A Perfect Circle", title:"Thirteenth Step"}], songs:[]},
+  {year:2001, albums:[{artist:"Tool", title:"Lateralus"},{artist:"System of a Down", title:"Toxicity"}], songs:[]},
+  {year:2000, albums:[{artist:"A Perfect Circle", title:"Mer de Noms"},{artist:"Papa Roach", title:"Infest"}], songs:[]},
+  {year:1999, albums:[{artist:"AFI", title:"All Hallow's E.P."}], songs:[]},
+  {year:1998, albums:[{artist:"Bad Religion", title:"No Substance"}], songs:[]},
+  {year:1995, albums:[{artist:"Rancid", title:"...And Out Come the Wolves"},{artist:"Foo Fighters", title:"Foo Fighters"}], songs:[]},
+  {year:1994, albums:[{artist:"The Offspring", title:"Smash"},{artist:"Various Artists", title:"Punk-O-Rama Vol. 1"}], songs:[]},
+  {year:1992, albums:[{artist:"Rage Against the Machine", title:"Rage Against the Machine"},{artist:"W.A.S.P.", title:"The Crimson Idol"}], songs:[]},
+  {year:1991, albums:[{artist:"Nirvana", title:"Nevermind"},{artist:"Pearl Jam", title:"Ten"}], songs:[]}
+];
+
+const READY = "Ready to Post";
+
+/* CONCERT BUCKET LIST - bands still to catch. Auto-checks if seen. */
+let BUCKET_LIST = [
+  "Rage Against the Machine","Down by Law","Guttermouth","Bloodhound Gang",
+  "Eagles of Death Metal","Jane's Addiction","Tenacious D","Hanabie / BABYMETAL",
+  "Rob Zombie","Led Zeppelin (or anyone still standing)","Iron Maiden","Metallica",
+  "Black Sabbath","Sublime","Bad Brains","Refused","The Distillers","Turnstile"
+];
+
+let SEEN_BANDS = new Set();
+let COMPS = [
+  {id:"por", name:"Punk-O-Rama", volumes:[
+      {vol:"1", tracks:[{artist:"Bad Religion",song:"Do What You Want"},{artist:"NOFX",song:"Don't Call Me White"},{artist:"Rancid",song:"Hyena"},{artist:"The Offspring",song:"Session"},{artist:"Pennywise",song:"Dying to Know"},{artist:"Rancid",song:"I Wanna Riot"},{artist:"Total Chaos",song:"Riot City"},{artist:"Gas Huffer",song:"Crooked Bird"},{artist:"RKL",song:"We're Back, We're Pissed"},{artist:"The Offspring",song:"Jennifer Lost the War"},{artist:"Down by Law",song:"Bright Green Globe"},{artist:"Pennywise",song:"Open Door"},{artist:"Wayne Kramer",song:"Crack in the Universe"},{artist:"NOFX",song:"Liza and Louise"},{artist:"Ten Foot Pole",song:"My Wall"},{artist:"SNFU",song:"Reality Is a Ride on the Bus"}]},
+      {vol:"2", tracks:[{artist:"Descendents",song:"Coffee Mug"},{artist:"Pennywise",song:"Perfect People"},{artist:"Pulley",song:"Cashed In"},{artist:"Me First and the Gimme Gimmes",song:"Only the Good Die Young"},{artist:"The Humpers",song:"Mutate With Me"},{artist:"Rancid",song:"Sidekick"},{artist:"Millencolin",song:"Bullion"},{artist:"Voodoo Glow Skulls",song:"El Coo Cooi"},{artist:"The Joykiller",song:"Hate"},{artist:"T.S.O.L.",song:"Code Blue"},{artist:"NOFX",song:"Whatever Didi Wants"},{artist:"Down By Law",song:"Gruesome Gary"},{artist:"Poison Idea",song:"Just to Get Away"},{artist:"Dead Fucking Last",song:"Thought Control"},{artist:"SNFU",song:"Don't Have the Cow"},{artist:"Bad Religion",song:"Give You Nothing"},{artist:"New Bomb Turks",song:"Jukebox Lean"}]},
+      {vol:"3", tracks:[{artist:"NOFX",song:"We Threw Gasoline on the Fire and Now We Have Stumps for Arms and No Eyebrows"},{artist:"Dwarves",song:"Everybodies Girl"},{artist:"All",song:"World's on Heroin"},{artist:"Bouncing Souls",song:"Say Anything"},{artist:"Voodoo Glow Skulls",song:"Delinquent Song"},{artist:"H2O",song:"Everready"},{artist:"Straight Faced",song:"Greed Motivates"},{artist:"Zeke",song:"Telepath Boy"},{artist:"Union 13",song:"Never Connected"},{artist:"Agnostic Front",song:"Gotta Go"},{artist:"New Bomb Turks",song:"Defiled"},{artist:"The Cramps",song:"Haulass Hyena"},{artist:"Rancid",song:"Rats in the Hallway"},{artist:"The Humpers",song:"Steel-Toed Sneakers"},{artist:"Wayne Kramer",song:"Bad Seed"},{artist:"Gas Huffer",song:"Rotten Egg"},{artist:"Red Aunts",song:"Poison Steak"},{artist:"Down By Law",song:"No Equalizer"},{artist:"Osker",song:"Alright"},{artist:"Ten Foot Pole",song:"A.D.D."},{artist:"Millencolin",song:"Lozin' Must"},{artist:"Bad Religion",song:"You"},{artist:"I Against I",song:"Ordinary Fight"},{artist:"Pulley",song:"If"},{artist:"Pennywise",song:"Wake Up"}]},
+      {vol:"4", tracks:[{artist:"Pennywise",song:"Fight It"},{artist:"Pulley",song:"Second Best"},{artist:"H2O",song:"Faster Than the World"},{artist:"Rancid",song:"1998"},{artist:"Bombshell Rocks",song:"The Will the Message"},{artist:"The Bouncing Souls",song:"Hopeless Romantic"},{artist:"Ten Foot Pole",song:"The Getaway"},{artist:"All",song:"Think the World"},{artist:"New Bomb Turks",song:"Snap Decision"},{artist:"Bad Religion",song:"Generator"},{artist:"Dwarves",song:"I Will Deny"},{artist:"Straight Faced",song:"Let's Do This"},{artist:"Agnostic Front",song:"It's My Life"},{artist:"59 Times the Pain",song:"Weakend Revolution"},{artist:"Refused",song:"Summerholiday Vs. Punkroutine"},{artist:"Voodoo Glow Skulls",song:"They Always Come Back"},{artist:"Zeke",song:"Twisted"},{artist:"Gas Huffer",song:"Don't Panic"},{artist:"Tom Waits",song:"Big in Japan"},{artist:"Gentleman Jack Grisham",song:"Someone to Love?"},{artist:"Union 13",song:"A Life's Story"},{artist:"98 Mute",song:"Picture This"},{artist:"Osker",song:"Lucky"},{artist:"Millencolin",song:"Mr. Clean"},{artist:"NOFX",song:"Kids of the K-Hole"}]},
+      {vol:"5", tracks:[{artist:"NOFX",song:"Pump up the Valuum"},{artist:"All",song:"Problematic"},{artist:"Millencolin",song:"No Cigar"},{artist:"The (International) Noise Conspiracy",song:"Smash It Up"},{artist:"Vision",song:"Close Minded"},{artist:"Rancid",song:"Poison"},{artist:"Guttermouth",song:"Secure Horizons"},{artist:"Osker",song:"Panic"},{artist:"Dwarves",song:"Better Be Women"},{artist:"98 Mute",song:"Slow Motion Riot"},{artist:"Beatsteaks",song:"We Have to Figure It Out Tonight"},{artist:"H2O",song:"Guilty by Association"},{artist:"Madball",song:"Hold It Down"},{artist:"Straight Faced",song:"Happy"},{artist:"Refused",song:"Refused Are Fucking Dead"},{artist:"Death By Stereo",song:"Lookin' Out for #1"},{artist:"Bombshell Rocks",song:"1.80 Down"},{artist:"Dropkick Murphys",song:"Good Rats"},{artist:"The Bouncing Souls",song:"Kid"},{artist:"Satanic Surfers",song:"What Ever"},{artist:"Pennywise",song:"Badge of Pride"},{artist:"Pulley",song:"Gone"},{artist:"Union 13",song:"The Game"},{artist:"Voodoo Glow Skulls",song:"Stranded in the Jungle"},{artist:"The Hives",song:"Introduce the Metric System in Time"},{artist:"New Bomb Turks",song:"Automatic Teller"},{artist:"Zeke",song:"Evil Dead"},{artist:"Agnostic Front",song:"Riot Riot Upstart"}]},
+      {vol:"6", tracks:[{artist:"Guttermouth",song:"Can I Borrow Some Ambition?"},{artist:"Deviates",song:"Come With Me"},{artist:"NOFX",song:"Bath of Least Resistance"},{artist:"Millencolin",song:"Blackeye"},{artist:"Hot Water Music",song:"Jack of All Trades"},{artist:"The Bouncing Souls",song:"True Believers"},{artist:"Pennywise",song:"We're Desperate"},{artist:"Osker",song:"Strangled"},{artist:"Rancid",song:"It's Quite Alright"},{artist:"Death by Stereo",song:"Holding 60 Dollars on a Burning Bridge"},{artist:"Dropkick Murphys",song:"The Gauntlet"},{artist:"Descendents",song:"Original Me"},{artist:"Pulley",song:"Runaway"},{artist:"All",song:"She Broke My Dick"},{artist:"Raised Fist",song:"Different But the Same"},{artist:"Downset",song:"Pure Trauma"},{artist:"Beatsteaks",song:"Let Me In"},{artist:"Union 13",song:"Innocence"},{artist:"Bad Religion",song:"I Want to Conquer the World"},{artist:"The (International) Noise Conspiracy",song:"Only Lovers Left Alive"},{artist:"Voodoo Glow Skulls",song:"Say Goodnight"},{artist:"Bombshell Rocks",song:"Tonight I'm Burning"},{artist:"The Business",song:"Takers & Users"}]},
+      {vol:"7", tracks:[{artist:"Millencolin",song:"Fingers Crossed"},{artist:"Hot Water Music",song:"Wayfarer"},{artist:"The (International) Noise Conspiracy",song:"Up for Sale"},{artist:"Pennywise",song:"The World"},{artist:"Division of Laura Lee",song:"Black City"},{artist:"NOFX",song:"Olympia, WA"},{artist:"Randy",song:"Addicts of Communication"},{artist:"Pulley",song:"Hooray for Me"},{artist:"The Bouncing Souls",song:"The Something Special"},{artist:"Beatsteaks",song:"God Knows"},{artist:"Bad Religion",song:"The Defense"},{artist:"Deviates",song:"The End"},{artist:"Dropkick Murphys",song:"Heroes from Our Past"},{artist:"Rancid",song:"Bob"},{artist:"Death by Stereo",song:"Wasted Words"},{artist:"Agnostic Front",song:"Love to Be Hated"},{artist:"1208",song:"Outside Looking In"},{artist:"98 Mute",song:"M.A.D."},{artist:"Guttermouth",song:"My Girlfriend"}]},
+      {vol:"8", tracks:[{artist:"The Distillers",song:"I Am a Revenant"},{artist:"Motion City Soundtrack",song:"Don't Call It a Comeback"},{artist:"Hot Water Music",song:"Trusty Chords"},{artist:"Rancid",song:"As Wicked"},{artist:"The Bouncing Souls",song:"New Day"},{artist:"Matchbook Romance",song:"The Greatest Fall (Of All Time)"},{artist:"NOFX",song:"The Idiots Are Taking Over"},{artist:"Bad Religion",song:"Who We Are"},{artist:"Division of Laura Lee",song:"Trapped In"},{artist:"Ikara Colt",song:"Sink Venice"},{artist:"F-Minus",song:"Sweating Blood"},{artist:"Sage Francis",song:"Makeshift Patriot"},{artist:"The (International) Noise Conspiracy",song:"A New Morning, Changing Weather"},{artist:"Randy",song:"Welfare Problems"},{artist:"The Black Keys",song:"Thickfreakness"},{artist:"Death By Stereo",song:"Wasted Words"},{artist:"Death By Stereo",song:"Unstoppable"},{artist:"Refused",song:"Coup d'Etat"},{artist:"Pennywise",song:"Holiday in the Sun"},{artist:"Dropkick Murphys",song:"Gonna Be a Blackout Tonight"},{artist:"Transplants",song:"Quick Death"},{artist:"Atmosphere",song:"Bird Sings Why the Caged I Knows"},{artist:"Turbonegro",song:"Train of Flesh"},{artist:"Tiger Army",song:"Incorporeal"},{artist:"Millencolin",song:"Bowmore"},{artist:"Pulley",song:"The Ocean Song"},{artist:"Guttermouth",song:"Contribution"},{artist:"Bombshell Rocks",song:"Warpath"},{artist:"Raised Fist",song:"Get This Right!"},{artist:"No Fun at All",song:"Lose Another Friend"},{artist:"U.S. Bombs",song:"Roll Around"},{artist:"Bad Religion",song:"Shattered Faith"},{artist:"Error",song:"Quick Death [Remix]"}]},
+      {vol:"9", tracks:[{artist:"Bad Religion",song:"Social Suicide"},{artist:"From First to Last",song:"Ride the Wings of Pestilence"},{artist:"The Matches",song:"Sick Little Suicide"},{artist:"Atmosphere",song:"The Keys to Life vs. 15 Minutes of Fame"},{artist:"Pennywise",song:"Now I Know"},{artist:"Motion City Soundtrack",song:"Throw Down"},{artist:"Rancid",song:"Tropical London"},{artist:"Dropkick Murphys",song:"The Dirty Glass"},{artist:"The Weakerthans",song:"Plea from a Cat Named Virtute"},{artist:"Matchbook Romance",song:"Promise"},{artist:"Scatter the Ashes",song:"City in the Sea"},{artist:"Refused",song:"Liberation Frequency"},{artist:"Nekromantix",song:"Struck By a Wrecking Ball"},{artist:"Pulley",song:"Bad Reputation"},{artist:"1208",song:"Fall Apart"},{artist:"The Bouncing Souls",song:"Sing Along Forever"},{artist:"Hot Water Music",song:"Seein' Diamonds"},{artist:"The Special Goodness",song:"Life Goes By"},{artist:"HorrorPops",song:"Miss Take"},{artist:"Tiger Army",song:"Temptation"},{artist:"Division Of Laura Lee",song:"Dirty Love"},{artist:"Error",song:"Burn in Hell"},{artist:"Eyedea & Abilities",song:"Now"},{artist:"Death By Stereo",song:"The Plague (live)"}]},
+      {vol:"10", tracks:[{artist:"Motion City Soundtrack",song:"When \"You're\" Around"},{artist:"Matchbook Romance",song:"Lovers & Liars"},{artist:"The Matches",song:"Shoot Me in the Smile"},{artist:"From First to Last",song:"Failure By Designer Jeans"},{artist:"Sage Francis",song:"Sun Vs. Moon"},{artist:"Bad Religion",song:"News From The Front"},{artist:"This Is Me Smiling",song:"Mixin' Up Adjectives"},{artist:"Youth Group",song:"Shadowland"},{artist:"Scatter the Ashes",song:"From the Tops of Trees"},{artist:"Some Girls",song:"I Need Drugs"},{artist:"Dangerdoom",song:"Mince Meat"},{artist:"The Offspring",song:"Mission From God"},{artist:"Converge",song:"Black Cloud"},{artist:"Hot Water Music",song:"Last Goodbyes"},{artist:"The Bouncing Souls",song:"Anchors Aweigh (Live)"},{artist:"Millencolin",song:"Farewell My Hell"},{artist:"Dropkick Murphys",song:"The Warrior's Code"},{artist:"The Unseen",song:"Dead Weight Falls"},{artist:"Rancid",song:"White Knuckle Ride"},{artist:"Pennywise",song:"Falling Down"},{artist:"NOFX",song:"No Fun in Fundamentalism"},{artist:"Pulley",song:"Bloodstain"},{artist:"The Special Goodness",song:"Not the Way"},{artist:"Tiger Army",song:"Ghostfire"},{artist:"Roger Miret and the Disasters",song:"Riot, Riot, Riot"},{artist:"The Coup",song:"Laugh/Love/Fuck"}]}
+  ]},
+  {id:"sm", name:"Short Music for Short People", volumes:[
+      {vol:"", tracks:[{artist:"Fizzy Bangers",song:"Short Attention Span"},{artist:"Less Than Jake",song:"Anchor"},{artist:"Teen Idols",song:"Ketchup Soup"},{artist:"Terrorgruppe",song:"A.C.A.B. (All Cops Are Bastards)"},{artist:"Good Riddance",song:"Overcoming Learned Behavior"},{artist:"Chixdiggit!",song:"Quit Your Job"},{artist:"The Living End",song:"Ready"},{artist:"Bad Religion",song:"Out Of Hand"},{artist:"Hi-Standard",song:"Asian Pride"},{artist:"Aerobitch",song:"Steamroller Blues"},{artist:"Nerf Herder",song:"Doin' Laundry"},{artist:"Bigwig",song:"Freegan"},{artist:"Undeclinable Ambuscade",song:"Not Again"},{artist:"Fury 66",song:"Waste Away"},{artist:"The Ataris",song:"The Radio Still Sucks"},{artist:"Unwritten Law",song:"Armageddon Singalong"},{artist:"A.F.I.",song:"Hearts Frozen Soil Thawed Once More By The Spring Of Rage, Despair, And Hopelessness"},{artist:"Dillinger Four",song:"Farts Are Jazz To Assholes"},{artist:"Spread",song:"Surf City"},{artist:"Swingin' Utters",song:"Back To You"},{artist:"The Barfeeders",song:"Outhouse Of Doom"},{artist:"Citizen Fish",song:"Alienation"},{artist:"Blink-182",song:"Family Reunion"},{artist:"Goober Patrol",song:"Mirror, Signal, Wheelspin"},{artist:"Killswitch",song:"Saturday Night"},{artist:"Enemy You",song:"Bedroom Windows"},{artist:"No Use For A Name",song:"Sara Fisher"},{artist:"Green Day",song:"The Ballad Of Wilhelm Fink"},{artist:"Consumed",song:"Delraiser Part III: Del On Earth"},{artist:"The Mr. T Experience",song:"Told You Once"},{artist:"Lagwagon",song:"Randal Gets Drunk"},{artist:"Gwar",song:"Fishfuck"},{artist:"The Dickies",song:"Howdy Doody In The Woodshed"},{artist:"Samiam",song:"Long Enough To Forget You"},{artist:"Dogpiss",song:"Erik Sandin's Stand-in"},{artist:"59 Times The Pain",song:"We Want The Kids"},{artist:"Bracket",song:"Warren's Song Part 8"},{artist:"NoMeansNo",song:"No Fgcnuik"},{artist:"Descendents",song:"I Like Food"},{artist:"Dance Hall Crashers",song:"Triple Track"},{artist:"Guttermouth",song:"Don Camero Lost His Mind"},{artist:"Limp",song:"X-99"},{artist:"Jughead's Revenge",song:"Faust"},{artist:"Circle Jerks",song:"Deny Everything"},{artist:"The Offspring",song:"Hand Grenades"},{artist:"Mad Caddies",song:"Mike Booted Our First Song, So We Recorded This One Instead"},{artist:"The Criminals",song:"Union Yes"},{artist:"Screeching Weasel",song:"Dirty Needles"},{artist:"One Man Army",song:"300 Miles"},{artist:"Strung Out",song:"Klawsterfobia"},{artist:"Youth Brigade",song:"You Don't Know Shit"},{artist:"Groovie Ghoulies",song:"Doin' Fine"},{artist:"Tilt",song:"John For The Working Man"},{artist:"Spazz",song:"A Prayer For The Complete & Utter Eradication Of All Generic Pop-Punk"},{artist:"The Damned",song:"It's A Real Time Thing"},{artist:"88 Fingers Louie",song:"All My Friends Are In Popular Bands"},{artist:"D.O.A.",song:"I Hate Punk Rock"},{artist:"Pulley",song:"Fun"},{artist:"The Vandals",song:"To All The Kids"},{artist:"Pennywise",song:"30 Seconds Till The End Of The World"},{artist:"No Fun At All",song:"Get A Grip"},{artist:"Sick Of It All",song:"Blatty (Human Egg)"},{artist:"All",song:"I Got None"},{artist:"NOFX",song:"See Her Pee"},{artist:"7 Seconds",song:"F.O.F.O.D."},{artist:"Rancid",song:"Blacklisted"},{artist:"Diesel Boy",song:"Chandeliers And Souvenirs"},{artist:"Adrenalin O.D.",song:"Your Kung-Fu Is Old... And Now You Must Die!!!"},{artist:"Frenzal Rhomb",song:"My Pants Keep Falling Down"},{artist:"The Queers",song:"I Hate Your Fucking Guts"},{artist:"D.I.",song:"Jingle"},{artist:"Black Flag",song:"Spray Paint"},{artist:"White Flag",song:"Rage Against The Machine Are Capitalist Phonies"},{artist:"Anti-Flag",song:"Bring It To An End"},{artist:"Avail",song:"Not A Happy Man"},{artist:"The Real McKenzies",song:"Old Mrs. Cuddy"},{artist:"Agnostic Front",song:"Traitor"},{artist:"Down By Law",song:"Life Rules 101"},{artist:"Radio Days",song:"Wake Up"},{artist:"Useless I.D.",song:"Too Bad You Don't Get It"},{artist:"Poison Idea",song:"Humanity"},{artist:"Men O' Steel",song:"In Your Head"},{artist:"Subhumans",song:"Supermarket Forces"},{artist:"Buck Wild",song:"Tribute To The Mammal"},{artist:"Lunachicks",song:"Pretty Houses"},{artist:"Dwarves",song:"The Band That Wouldn't Die"},{artist:"Bouncing Souls",song:"Like A Fish In Water"},{artist:"Trigger Happy",song:"Turn It Up"},{artist:"One Hit Wonder",song:"Madam's Apple"},{artist:"Hotbox",song:"Staggering"},{artist:"20%",song:"DMV"},{artist:"Snuff",song:"Big Fat Skinhead"},{artist:"The Muffs",song:"Pimm"},{artist:"H2O",song:"Mr. Brett"}]}
+  ]}
+];
+
+/* ===================== TRANSLATIONS ===================== */
+const I18N = {
+  en:{
+    nav_stats:"The Numbers", nav_shows:"The Journal", nav_hunt:"The Hunt", nav_top10:"Top 10", nav_byshows:"Shows by Year", nav_bybands:"Bands by Year", nav_map:"Map", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama Challenge", nav_about:"About", nav_bucket:"Bands to See", nav_fav:"The Best Of",
+    kick_stats:"Iron Maiden", kick_map:"Bad Religion",
+    kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
+    stats_title:"The Number of the Beast", stats_desc:"My concert life in numbers.",
+    ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
+    bucket_title:"All I Want", kick_bucket:"The Offspring",
+    show_n:"show", shows_n:"shows",
+    quotes_title:"Scream It Back", quotes_kick:"My favourite lines", quotes_empty:"Add your favourite lines in the quotes list - they'll roll through here.",
+    fav_title:"All Killer No Filler", fav_kick:"Sum 41", fav_desc:"I love a thousand songs and a hundred records - but these are the ones I keep crawling back to. The albums that wired themselves into who I am, that soundtracked the moments that actually mattered, and still hit just as hard today. The few I'd save from a zombie apocalypse. All killers, no fillers.",
+    fav_albums:"Albums", fav_songs:"Songs", fav_year:"Year",
+    tab_top10:"Top 10", yr_shows:"Shows by year", yr_bands:"Bands by year", stats_byyear:"By year",
+    hero_eyebrow:"A live-music field journal",
+    hero_sub:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward. Because “when I've got the music, I've got a place to go.”",
+    st_shows:"Total shows", st_bands:"Bands seen", st_venues:"Venues", st_cities:"Cities", st_countries:"Countries", st_years:"Years active",
+    rec_band:"Most-seen band", rec_venue:"Most-visited venue", rec_city:"Most-visited city", rec_times:"times",
+    stats_desc:"All my concerts, all the bands I've seen, all the cities I've visited for shows, all the venues... my full concert journal!",
+    stats_topbands:"Top 10 bands", stats_topvenues:"Top 10 venues", stats_topcities:"Top 10 cities",
+    map_title:"I Want to Conquer the World", map_desc:"Every pin is a memory - and every memory comes with its own soundtrack.",
+    ledger_desc:"All the concerts, all the venues, all the bands - by date. Filter it however you please :)",
+    ledger_search:"Search band, venue, city...", f_allband:"All bands", f_allvenue:"All venues", f_allyear:"All years",
+    photos_desc:"All the cool pictures from the crazy shows - with bands, with fans, with the stage, with the coolest people I've met and had the pleasure to share the pit with :)",
+    photos_note:"Placeholder frames - drop real photos in the folder and they appear here automatically.",
+    por_title:"I Wanna Riot",
+    challenge_intro:"These two compilations are where my punk education began. Somewhere in those tracklists I got the idea to see every band on them live - and started ticking boxes. Some I figured I'd never catch, since bands rarely play those songs live - but a few came as cool surprises. Hope someday I can say I saw all these bands live... and maybe even that I heard those exact songs live (impossible :P).",
+    por_h:"Punk-O-Rama", por_desc:"Catch a band from every Epitaph Punk-O-Rama volume (1–10) live. (Sample line-ups - swap in the real tracklists.)",
+    sm_h:"Short Music for Short People", sm_desc:"101 bands, one ~30-second song each (Fat Wreck, 1999). The proper white-whale challenge. (Sample list - swap in the full tracklist.)", sm_done:"bands caught",
+    seen:"Seen", notseen:"Not seen", caught:"caught", all_bands:"All bands", bands_caught:"bands caught",
+    view_tracklist:"Tracklist", view_bands:"Bands only", songs_caught:"songs caught", bl_emptyrange:"Nothing here yet - keep adding bands.",
+    tracklist:"Tracklist", h_band:"Band", h_songs:"Songs", h_status:"Status",
+    awo_label:"Awesometer", awo_cap:"shows - keep going",
+    bl_hunting:"still hunting", bl_bagged:"bagged", bl_more:"Show all", bl_less:"Show top 10",
+    por_done:"volumes cleared",
+    bucket_title:"The Bucket List", bucket_desc:"The Top 100 bands I'm still hunting to see live. It'll always be a Top 100 - there are always at least 100 bands I haven't caught yet :)",
+    bucket_caught:"Caught", bucket_hunting:"Still hunting",
+    about_title:"About Me",
+    about_tag:"When I've got the music, I've got a place to go.", about_photo:"Your photo<br>goes here",
+    about_b1:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward.",
+    about_b2:"From the first blast of pure punk energy to the unforgettable rock vibes that stay with me long after the show ends, and the heavy riffs of metal that get my blood pumping, music has always been the fuel that keeps me alive. It's the chaos, the rage, the power, and the soul of everything I do.",
+    about_b3:"I've lived in different parts of the world, and every new city or country has added its own fire to the mix. Whether it's the pulse of a live punk show, the soul of rock, or the energy of a metal gig, every place I've been has had its own sound. Travelling and living in these places means discovering more music, feeling its pulse in every corner, and realising just how deeply music and travel are intertwined. Every new city brings new sounds, new bands, and chances to catch shows I wouldn't have seen otherwise.",
+    about_b4:"This site is where I share that journey - through the anthems that define my life, the concerts that will forever stay in my memory, the cities that shaped me, and the sounds that continue to fuel my passion. Every place, every beat, every show is a chapter in my life's soundtrack.",
+    about_b5:"So let's pump up the volume, turn the page, and explore the music that makes life unforgettable.",
+    blog_label:"From the pit · latest", blog_title:"Coming soon",
+    blog_body:"Tour diaries, set-list autopsies, and the occasional rant about reunion tours. When I find the time.",
+    blog_link:"Read the blog →",
+    foot_1:"Built and maintained by one fan.", foot_2:"Show data lives in a SharePoint list and feeds this page automatically."
+  },
+  pl:{
+    nav_stats:"Liczby", nav_shows:"Dziennik", nav_hunt:"Poszukiwany/Poszukiwana", nav_top10:"Top 10", nav_byshows:"Koncerty wg roku", nav_bybands:"Zespoły wg roku", nav_map:"Mapa", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama", nav_about:"O mnie", nav_bucket:"Na celowniku", nav_fav:"The Best Of",
+    kick_stats:"Iron Maiden", kick_map:"Bad Religion",
+    kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
+    stats_title:"The Number of the Beast", stats_desc:"Moje koncertowe życie w liczbach.",
+    ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
+    bucket_title:"All I Want", kick_bucket:"The Offspring",
+    show_n:"koncert", shows_n:"koncerty",
+    quotes_title:"Scream It Back", quotes_kick:"Moje ulubione wersy", quotes_empty:"Dodaj swoje ulubione wersy do listy cytatów - pojawią się tutaj.",
+    fav_title:"All Killer No Filler", fav_kick:"Sum 41", fav_desc:"Kocham tysiąc piosenek i setkę płyt - ale to są te, do których wracam bez końca. Albumy, które wrosły w to, kim jestem, które były ścieżką dźwiękową chwil, które naprawdę się liczyły, i wciąż uderzają tak samo mocno. Te kilka, które wyniósłbym z zombie-apokalipsy. All killers, no fillers.",
+    fav_albums:"Albumy", fav_songs:"Piosenki", fav_year:"Rok",
+    tab_top10:"Top 10", yr_shows:"Koncerty wg roku", yr_bands:"Zespoły wg roku", stats_byyear:"Wg roku",
+    hero_eyebrow:"Dziennik koncertowy z pierwszej linii",
+    hero_sub:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód. Bo „when I've got the music, I've got a place to go”.",
+    st_shows:"Koncerty łącznie", st_bands:"Widziane zespoły", st_venues:"Miejsca", st_cities:"Miasta", st_countries:"Kraje", st_years:"Lata aktywności",
+    rec_band:"Najczęściej widziany zespół", rec_venue:"Najczęściej odwiedzane miejsce", rec_city:"Najczęściej odwiedzane miasto", rec_times:"razy",
+    stats_desc:"Wszystkie moje koncerty, wszystkie zespoły, które widziałem, wszystkie miasta, które odwiedziłem dla koncertów, wszystkie miejsca... mój pełny dziennik koncertowy!",
+    stats_topbands:"Top 10 zespołów", stats_topvenues:"Top 10 miejsc", stats_topcities:"Top 10 miast",
+    map_title:"I Want to Conquer the World", map_desc:"Każda pinezka to wspomnienie - a każde wspomnienie ma własną ścieżkę dźwiękową.",
+    ledger_desc:"Wszystkie koncerty, wszystkie miejsca, wszystkie zespoły - według daty. Filtruj jak chcesz :)",
+    ledger_search:"Szukaj zespołu, miejsca, miasta...", f_allband:"Wszystkie zespoły", f_allvenue:"Wszystkie miejsca", f_allyear:"Wszystkie lata",
+    photos_desc:"Wszystkie świetne zdjęcia z szalonych koncertów - z zespołami, z fanami, ze sceną, z najfajniejszymi ludźmi, których poznałem i z którymi dzieliłem pit :)",
+    photos_note:"Ramki zastępcze - wrzuć prawdziwe zdjęcia do folderu, a pojawią się tu automatycznie.",
+    por_title:"I Wanna Riot",
+    challenge_intro:"Te dwie składanki to początek mojej punkowej edukacji. Gdzieś w tych tracklistach wpadłem na pomysł, żeby zobaczyć na żywo każdy zespół z nich - i zacząłem odhaczać kolejne. Niektórych pewnie nigdy nie zobaczę, bo zespoły rzadko grają te kawałki na żywo - ale kilka było miłą niespodzianką. Mam nadzieję, że kiedyś powiem, że widziałem wszystkie te zespoły na żywo... a może nawet, że słyszałem dokładnie te piosenki na żywo (niemożliwe :P).",
+    por_h:"Punk-O-Rama", por_desc:"Zobaczyć na żywo zespół z każdego tomu Epitaph Punk-O-Rama (1–10). (Przykładowe składy - wstaw prawdziwe listy.)",
+    sm_h:"Short Music for Short People", sm_desc:"101 zespołów, każdy z jedną ~30-sekundową piosenką (Fat Wreck, 1999). Prawdziwe wyzwanie. (Przykładowa lista - wstaw pełną tracklistę.)", sm_done:"zespołów zobaczonych",
+    seen:"Widziane", notseen:"Niewidziane", caught:"zobaczonych", all_bands:"Wszystkie zespoły", bands_caught:"zespołów zobaczonych",
+    view_tracklist:"Tracklista", view_bands:"Tylko zespoły", songs_caught:"usłyszanych piosenek", bl_emptyrange:"Tu jeszcze pusto - dodawaj zespoły.",
+    tracklist:"Tracklista", h_band:"Zespół", h_songs:"Utwory", h_status:"Status",
+    awo_label:"Awesometer", awo_cap:"koncertów - nie zwalniaj",
+    bl_hunting:"do zobaczenia", bl_bagged:"zaliczone", bl_more:"Pokaż wszystkie", bl_less:"Pokaż top 10",
+    por_done:"zaliczonych tomów",
+    bucket_title:"Lista marzeń", bucket_desc:"Top 100 zespołów, które wciąż chcę zobaczyć na żywo. To zawsze będzie Top 100 - zawsze jest co najmniej 100 zespołów, których jeszcze nie widziałem :)",
+    bucket_caught:"Zobaczone", bucket_hunting:"Do zobaczenia",
+    about_title:"O mnie",
+    about_tag:"When I've got the music, I've got a place to go.", about_photo:"Tu trafi<br>Twoje zdjęcie",
+    about_b1:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód.",
+    about_b2:"Od pierwszego wybuchu czystej punkowej energii, przez rockowe wibracje, które zostają ze mną długo po koncercie, po ciężkie metalowe riffy, które rozpędzają krew - muzyka zawsze była paliwem, które trzyma mnie przy życiu. To chaos, wściekłość, siła i dusza wszystkiego, co robię.",
+    about_b3:"Mieszkałem w różnych częściach świata, a każde nowe miasto czy kraj dorzucały do tego swój własny ogień. Czy to puls punkowego koncertu, dusza rocka, czy energia metalowego gigu - każde miejsce miało swój dźwięk. Podróże i życie w tych miejscach to odkrywanie kolejnej muzyki i świadomość, jak mocno muzyka i podróże są ze sobą splecione.",
+    about_b4:"Ta strona to miejsce, w którym dzielę się tą podróżą - przez hymny, które definiują moje życie, koncerty, które na zawsze zostaną w pamięci, miasta, które mnie ukształtowały, i dźwięki, które wciąż napędzają moją pasję. Każde miejsce, każdy bit, każdy koncert to rozdział w ścieżce dźwiękowej mojego życia.",
+    about_b5:"Więc podkręćmy głośność, przewróćmy stronę i odkrywajmy muzykę, która sprawia, że życie jest niezapomniane.",
+    blog_label:"Spod sceny · najnowsze", blog_title:"Wkrótce",
+    blog_body:"Dzienniki z tras, sekcje zwłok setlist i narzekanie na trasy reunifikacyjne. Kiedy znajdę czas.",
+    blog_link:"Czytaj bloga →",
+    foot_1:"Tworzone i prowadzone przez jednego fana.", foot_2:"Dane o koncertach żyją na liście SharePoint i automatycznie zasilają tę stronę."
+  },
+  es:{
+    nav_stats:"Números",
+    nav_shows:"El Diario",
+    nav_hunt:"La Caza",
+    nav_top10:"Top 10",
+    nav_byshows:"Shows por año",
+    nav_bybands:"Bandas por año",
+    nav_map:"El Mapa",
+    nav_ledger:"Story of My Life",
+    nav_photos:"The Memory Remains",
+    nav_por:"Reto Punk-O-Rama",
+    nav_about:"Sobre mí",
+    nav_bucket:"Bandas por ver",
+    nav_fav:"Lo Mejor",
+    nav_quotes:"Scream It Back",
+    kick_stats:"Iron Maiden",
+    kick_map:"Bad Religion",
+    kick_ledger:"Social Distortion",
+    kick_photos:"Metallica",
+    kick_por:"Rancid",
+    kick_bucket:"The Offspring",
+    fav_kick:"Sum 41",
+    quotes_kick:"Mis frases favoritas",
+    stats_title:"The Number of the Beast",
+    map_title:"I Want to Conquer the World",
+    ledger_title:"Story of My Life",
+    photos_title:"The Memory Remains",
+    por_title:"I Wanna Riot",
+    bucket_title:"All I Want",
+    fav_title:"All Killer No Filler",
+    quotes_title:"Scream It Back",
+    stats_desc:"Todos mis conciertos, todas las bandas que vi, todas las ciudades que visité para ver shows, todas las salas... ¡mi diario de conciertos completo!",
+    stats_byyear:"Por año",
+    tab_top10:"Top 10",
+    yr_shows:"Shows por año",
+    yr_bands:"Bandas por año",
+    stats_topbands:"Top 10 bandas",
+    stats_topvenues:"Top 10 salas",
+    stats_topcities:"Top 10 ciudades",
+    st_shows:"Shows totales",
+    st_bands:"Bandas vistas",
+    st_venues:"Salas",
+    st_cities:"Ciudades",
+    st_countries:"Países",
+    st_years:"Años activo",
+    rec_band:"Banda más vista",
+    rec_venue:"Sala más visitada",
+    rec_city:"Ciudad más visitada",
+    rec_times:"veces",
+    show_n:"show",
+    shows_n:"shows",
+    map_desc:"Cada marcador es un recuerdo - y cada recuerdo viene con su propia banda sonora.",
+    ledger_desc:"Todos los conciertos, todas las salas, todas las bandas - por fecha. Filtra como quieras :)",
+    ledger_search:"Buscar banda, sala, ciudad...",
+    f_allband:"Todas las bandas",
+    f_allvenue:"Todas las salas",
+    f_allyear:"Todos los años",
+    photos_desc:"Todas las fotos geniales de los shows alocados - con bandas, con fans, con el escenario, con la gente más cool que conocí y con quien compartí el pit :)",
+    photos_note:"Marcos de muestra - pon fotos reales en la carpeta y aparecen aquí solas.",
+    challenge_intro:"Estas dos recopilaciones son donde empezó mi educación punk. En algún punto de esas listas se me ocurrió ver en vivo a todas las bandas - y empecé a tachar casillas. Algunas pensé que nunca las atraparía, porque las bandas rara vez tocan esas canciones en vivo - pero algunas fueron sorpresas geniales. Espero que algún día pueda decir que vi a todas estas bandas en vivo... y quizá incluso que escuché esas mismas canciones en vivo (imposible :P).",
+    por_h:"Punk-O-Rama",
+    por_desc:"Atrapa en vivo a una banda de cada volumen de Punk-O-Rama (1–10).",
+    sm_h:"Short Music for Short People",
+    sm_desc:"101 bandas, una canción de ~30 segundos cada una (Fat Wreck, 1999). El reto definitivo.",
+    sm_done:"bandas cazadas",
+    seen:"Vista",
+    notseen:"No vista",
+    caught:"cazadas",
+    all_bands:"Todas las bandas",
+    bands_caught:"bandas cazadas",
+    view_tracklist:"Lista de temas",
+    view_bands:"Solo bandas",
+    songs_caught:"canciones cazadas",
+    bl_emptyrange:"Aquí todavía nada - sigue añadiendo bandas.",
+    tracklist:"Lista de temas",
+    h_band:"Banda",
+    h_songs:"Temas",
+    h_status:"Estado",
+    awo_label:"Awesometer",
+    awo_cap:"shows - sigue así",
+    bl_hunting:"aún cazando",
+    bl_bagged:"cazadas",
+    bl_more:"Ver todas",
+    bl_less:"Ver top 10",
+    por_done:"volúmenes completados",
+    bucket_desc:"El Top 100 de bandas que aún persigo para ver en vivo. Siempre será un Top 100 - siempre hay al menos 100 bandas que todavía no cacé :)",
+    bucket_caught:"Cazada",
+    bucket_hunting:"Aún cazando",
+    about_title:"Sobre mí",
+    about_tag:"When I've got the music, I've got a place to go.",
+    about_photo:"Tu foto<br>va aquí",
+    about_b1:"La música no es solo una parte de mi vida - es la energía pura que la alimenta. La compañera constante que guía mi camino, el ritmo que me mantiene avanzando.",
+    about_b2:"Desde el primer estallido de energía punk pura, pasando por las vibras inolvidables del rock que se quedan conmigo mucho después del show, hasta los riffs pesados del metal que me aceleran la sangre, la música siempre ha sido el combustible que me mantiene vivo. Es el caos, la rabia, la fuerza y el alma de todo lo que hago.",
+    about_b3:"He vivido en distintas partes del mundo, y cada ciudad o país nuevo le sumó su propio fuego a la mezcla. Ya sea el pulso de un show punk en vivo, el alma del rock o la energía de un concierto de metal, cada lugar donde estuve tuvo su propio sonido. Viajar y vivir en estos lugares significa descubrir más música, sentir su pulso en cada rincón y darme cuenta de lo profundamente entrelazados que están la música y el viaje. Cada ciudad nueva trae sonidos nuevos, bandas nuevas y oportunidades de ver shows que de otra forma no habría visto.",
+    about_b4:"Este sitio es donde comparto ese viaje - a través de los himnos que definen mi vida, los conciertos que quedarán para siempre en mi memoria, las ciudades que me formaron y los sonidos que siguen alimentando mi pasión. Cada lugar, cada beat, cada show es un capítulo en la banda sonora de mi vida.",
+    about_b5:"Así que subamos el volumen, pasemos la página y exploremos la música que hace la vida inolvidable.",
+    hero_eyebrow:"Un diario de música en vivo",
+    hero_sub:"La música no es solo una parte de mi vida - es la energía pura que la alimenta. La compañera constante que guía mi camino, el ritmo que me mantiene avanzando. Porque “when I've got the music, I've got a place to go.”",
+    fav_desc:"Amo mil canciones y cien discos - pero estos son a los que siempre vuelvo. Los álbumes que se grabaron en quien soy, que le pusieron banda sonora a los momentos que de verdad importaron, y que todavía pegan igual de fuerte. Los pocos que salvaría de un apocalipsis zombi. All killers, no fillers.",
+    fav_albums:"Álbumes",
+    fav_songs:"Canciones",
+    fav_year:"Año",
+    quotes_empty:"Añade tus frases favoritas en la lista de citas - irán apareciendo aquí.",
+    blog_label:"Desde el pit · lo último",
+    blog_title:"Próximamente",
+    blog_body:"Diarios de gira, autopsias de setlists y alguna que otra queja sobre giras de reunión. Cuando encuentre tiempo.",
+    blog_link:"Leer el blog →",
+    foot_1:"Hecho y mantenido por un fan.",
+    foot_2:"Los datos de los shows viven en una lista de SharePoint y alimentan esta página automáticamente."
+  }
+};
+let lang="en";
+const t = k => (I18N[lang][k] ?? I18N.en[k] ?? k);
+
+/* ===================== HELPERS ===================== */
+function toBandArray(b){
+  if(Array.isArray(b)) return b.map(x=>String(x).trim()).filter(Boolean);
+  if(typeof b==="string") return b.split(/[;,]/).map(x=>x.trim()).filter(Boolean);
+  return [];
+}
+function normalize(rows){
+  return rows.map(r=>({...r, bands:toBandArray(r.bands)}))
+             .filter(r=> (r.status||READY)===READY)   // only Ready to Post
+             .filter(r=> r.bands.length);
+}
+function sortDesc(obj){ return Object.entries(obj).sort((a,b)=>b[1]-a[1] || String(a[0]).localeCompare(String(b[0]))); }
+function countRows(rows,key){ const m={}; rows.forEach(r=>{ m[r[key]]=(m[r[key]]||0)+1; }); return m; }
+function countBands(rows){ const m={}; rows.forEach(r=>r.bands.forEach(b=>{ m[b]=(m[b]||0)+1; })); return m; }
+
+/* ===================== STATS ===================== */
+function renderStats(){
+  const bandC = countBands(CONCERTS);
+  const venC  = countRows(CONCERTS,"venue");
+  const cityC = countRows(CONCERTS,"city");
+  const years = CONCERTS.map(c=>c.year);
+  const countries = new Set(CONCERTS.map(c=>c.country));
+
+  const cards = [
+    {num:CONCERTS.length, cap:t("st_shows")},
+    {num:Object.keys(bandC).length, cap:t("st_bands")},
+    {num:Object.keys(venC).length, cap:t("st_venues")},
+    {num:Object.keys(cityC).length, cap:t("st_cities")},
+    {num:countries.size, cap:t("st_countries")},
+    {num:(Math.max(...years)-Math.min(...years)+1), cap:t("st_years")}
+  ];
+  document.getElementById("statGrid").innerHTML = cards.map(c=>
+    `<div class="stat"><div class="num">${c.num}</div><div class="cap">${c.cap}</div></div>`).join("");
+
+  renderRecords(bandC, venC, cityC);
+
+  document.getElementById("heroStamp").innerHTML =
+    `<div><b>${CONCERTS.length}</b><small>${t("st_shows")}</small></div>
+     <div><b>${Object.keys(bandC).length}</b><small>${t("st_bands")}</small></div>
+     <div><b>${Object.keys(venC).length}</b><small>${t("st_venues")}</small></div>`;
+
+  renderBars("topBands", sortDesc(bandC).slice(0,10));
+  renderBars("topVenues", sortDesc(venC).slice(0,10));
+  renderBars("topCities", sortDesc(cityC).slice(0,10));
+  renderStatTab();
+}
+let statTab='top10';
+function renderStatTab(){
+  const tabs=[['top10',t('tab_top10')],['shows',t('yr_shows')],['bands',t('yr_bands')]];
+  document.getElementById('statTabs').innerHTML = tabs.map(([k,lbl])=>
+    `<button data-st="${k}" class="${statTab===k?'on':''}">${lbl}</button>`).join('');
+  document.querySelectorAll('#statTabs button').forEach(b=>b.addEventListener('click',()=>{statTab=b.dataset.st;renderStatTab();}));
+  const top = statTab==='top10';
+  document.getElementById('paneTop10').style.display = top?'':'none';
+  document.getElementById('paneYear').style.display = top?'none':'';
+  if(!top){ yearMode = statTab; renderByYear(); }
+}
+function reducedMotion(){ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+let recTimer=null, recTies={};
+function renderRecords(bandC, venC, cityC){
+  const topTies = obj => { const s=sortDesc(obj); const max=s[0][1]; return {tied:s.filter(e=>e[1]===max).map(e=>e[0]), count:max}; };
+  recTies = {band:topTies(bandC), venue:topTies(venC), city:topTies(cityC)};
+  const order=[['rec_band','band'],['rec_venue','venue'],['rec_city','city']];
+  document.getElementById("records").innerHTML = order.map(([lk,key])=>{
+    const r=recTies[key];
+    const tie = r.tied.length>1 ? ` · ${r.tied.length}-way tie` : '';
+    return `<div class="rec"><span class="label">${t(lk)}</span><div class="rn" data-rec="${key}">${r.tied[0]}</div><div class="rc">${r.count} ${t("rec_times")}${tie}</div></div>`;
+  }).join("");
+  clearInterval(recTimer);
+  if(Object.values(recTies).some(r=>r.tied.length>1) && !reducedMotion()){
+    let i=0;
+    recTimer=setInterval(()=>{ i++; Object.entries(recTies).forEach(([key,r])=>{
+      if(r.tied.length>1){ const el=document.querySelector('.rn[data-rec="'+key+'"]'); if(el) el.textContent=r.tied[i%r.tied.length]; }
+    }); }, 2800);
+  }
+}
+let yearMode='shows';
+function bandsByYear(){ const m={}; CONCERTS.forEach(r=>{ m[r.year]=(m[r.year]||0)+r.bands.length; }); return m; }
+function renderByYear(){
+  const data = yearMode==='bands' ? bandsByYear() : countRows(CONCERTS,'year');
+  const entries = Object.entries(data).sort((a,b)=>a[0]-b[0]);
+  renderBars('byYear', entries, 'year');
+}
+function colorYear(r){ // high count -> gold, low -> orange/red
+  const hue=Math.round(10+r*35), light=48+Math.round(r*8);
+  return `hsl(${hue},92%,${light}%)`;
+}
+function renderBars(id, entries, mode){
+  const el=document.getElementById(id);
+  if(!entries.length){ el.innerHTML=""; return; }
+  const max=Math.max(...entries.map(e=>e[1]));
+  el.innerHTML = entries.map(([name,ct])=>{
+    const r=ct/max;
+    const col = mode==='year' ? colorYear(r) : 'var(--gold)';   // top-10 = unified gold
+    return `<div class="bar2">
+      <div class="bn2">${name}</div>
+      <div class="row2"><span class="track2"><span class="fill2" style="width:${Math.max(7,r*100)}%;background:${col}"></span></span><span class="ct2">${ct}</span></div>
+    </div>`;
+  }).join("");
+}
+
+/* ===================== MAP ===================== */
+let map, markers=[];
+function renderMap(){
+  if(!map){
+    map = L.map('map',{scrollWheelZoom:false, worldCopyJump:true}).setView([25,-30],2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'© OpenStreetMap', maxZoom:19, noWrap:false
+    }).addTo(map);
+    setTimeout(()=>map.invalidateSize(), 350);
+  }
+  markers.forEach(m=>map.removeLayer(m)); markers=[];
+  const byLoc={};
+  CONCERTS.forEach(c=>{ const k=c.lat+','+c.lng; (byLoc[k]=byLoc[k]||{lat:c.lat,lng:c.lng,venue:c.venue,city:c.city,country:c.country,shows:[]}).shows.push(c); });
+  const icon = L.divIcon({className:'',html:'<div class="pin"></div>',iconSize:[14,14],iconAnchor:[7,14]});
+  const pts=[];
+  Object.values(byLoc).forEach(g=>{
+    const list=g.shows.slice().sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0))
+      .map(s=>`${s.bands.join(', ')} (${s.month?moAbbr(s.month)+' ':''}${s.year})`).join('<br>');
+    const m=L.marker([g.lat,g.lng],{icon}).addTo(map)
+      .bindPopup(`<b>${g.venue}</b><br>${g.city}, ${g.country} · ${g.shows.length} ${g.shows.length>1?t('shows_n'):t('show_n')}<br><span class="pop-list">${list}</span>`,
+        {maxWidth:320, maxHeight:260});
+    markers.push(m); pts.push([g.lat,g.lng]);
+  });
+  if(pts.length){ try{ map.fitBounds(pts,{padding:[40,40],maxZoom:5}); }catch(e){} }
+}
+
+/* ===================== LEDGER ===================== */
+function fillSelect(id, values, allLabel){
+  const sel=document.getElementById(id); const cur=sel.value;
+  sel.innerHTML = `<option value="">${allLabel}</option>` + values.map(v=>`<option value="${v}">${v}</option>`).join("");
+  if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
+}
+let ledgerYearInit=false;
+function renderLedgerControls(){
+  const allBands=[...new Set(CONCERTS.flatMap(c=>c.bands))].sort();
+  fillSelect("fBand", allBands, t("f_allband"));
+  fillSelect("fVenue",[...new Set(CONCERTS.map(c=>c.venue))].sort(), t("f_allvenue"));
+  fillSelect("fYear", [...new Set(CONCERTS.map(c=>c.year))].sort((a,b)=>b-a), t("f_allyear"));
+  document.getElementById("search").placeholder = t("ledger_search");
+  if(!ledgerYearInit){                       // open on the current year by default
+    const cy=new Date().getFullYear(), sel=document.getElementById("fYear");
+    if([...sel.options].some(o=>o.value==cy)) sel.value=cy;
+    ledgerYearInit=true;
+  }
+}
+const MONTHS={en:['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+              pl:['','Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'],
+              es:['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']};
+function moAbbr(m){ return (m&&MONTHS[lang]&&MONTHS[lang][m])||MONTHS.en[m]||''; }
+function renderLedger(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const fb=document.getElementById("fBand").value, fv=document.getElementById("fVenue").value, fy=document.getElementById("fYear").value;
+  const rows = CONCERTS
+    .filter(c=>!fb||c.bands.includes(fb))
+    .filter(c=>!fv||c.venue===fv)
+    .filter(c=>!fy||c.year==fy)
+    .filter(c=>!q || (c.bands.join(' ')+c.venue+c.city).toLowerCase().includes(q))
+    .sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0) || a.venue.localeCompare(b.venue));
+  const list=document.getElementById("stubList");
+  if(!rows.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
+  list.innerHTML = rows.map(c=>
+    `<div class="stub">
+       <span class="dt">${c.month?`<span class="mo">${moAbbr(c.month)}</span>`:''}<span class="yr">'${String(c.year).slice(2)}</span></span>
+       <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${c.venue} · ${c.city}, ${c.country}</span></span>
+       <span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>
+     </div>`).join("");
+}
+
+/* ===================== PHOTOS / 3-UP CAROUSEL ===================== */
+let photoStart=0, photoTimer=null, PHOTO_ORDER=[];
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function frameHTML(p){
+  const inner = p.img ? `<img src="${p.img}" alt="${p.caption||''}">` : `<div class="ph-band">${p.band||'PHOTO'}</div>`;
+  return `<div class="frame"><div class="pic">${inner}</div><div class="cap">${p.caption||''}</div></div>`;
+}
+function renderPhotos(){
+  PHOTO_ORDER = shuffle(PHOTOS);
+  photoStart=0;
+  const pages=Math.max(1, Math.ceil(PHOTO_ORDER.length/3));
+  document.getElementById("dots").innerHTML =
+    Array.from({length:pages}).map((_,i)=>`<i data-i="${i}" class="${i===0?'on':''}"></i>`).join("");
+  document.querySelectorAll("#dots i").forEach(d=>d.addEventListener("click",()=>showPhotos(+d.dataset.i*3)));
+  showPhotos(0);
+  startPhotoTimer();
+}
+function showPhotos(start){
+  if(!PHOTO_ORDER.length) return;
+  const n=PHOTO_ORDER.length;
+  photoStart=((start%n)+n)%n;
+  const three=[0,1,2].map(k=>PHOTO_ORDER[(photoStart+k)%n]);
+  document.getElementById("photoRow").innerHTML = three.map(frameHTML).join("");
+  const page=Math.floor(photoStart/3);
+  document.querySelectorAll("#dots i").forEach((d,di)=>d.classList.toggle("on",di===page));
+}
+function startPhotoTimer(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  clearInterval(photoTimer);
+  photoTimer=setInterval(()=>showPhotos(photoStart+3), 5500);
+}
+document.getElementById("prevPhoto").addEventListener("click",()=>{showPhotos(photoStart-3);startPhotoTimer();});
+document.getElementById("nextPhoto").addEventListener("click",()=>{showPhotos(photoStart+3);startPhotoTimer();});
+
+/* ===================== CHALLENGE TRACKER (read-only, driven by concert log) ===================== */
+const norm = s => s.toLowerCase().replace(/^the\s+/,'').replace(/[.\u2019']/g,'').trim();
+let SEEN_NORM = new Set();
+function effSeen(band){ return SEEN_BANDS.has(band) || SEEN_NORM.has(norm(band)); }
+
+let activeTab='por:1';
+function bandMeter(comp,fillId,pctId){
+  const bands=[...new Set(comp.volumes.flatMap(v=>v.tracks).map(tk=>tk.artist))];
+  const seen=bands.filter(effSeen).length, pct=bands.length?Math.round(seen/bands.length*100):0;
+  document.getElementById(fillId).style.width=pct+'%';
+  document.getElementById(pctId).textContent=`${seen}/${bands.length} ${t('bands_caught')} · ${pct}%`;
+}
+function renderChallenge(){
+  SEEN_NORM = new Set([...SEEN_BANDS].map(norm));
+  const por=COMPS.find(c=>c.id==='por'), sm=COMPS.find(c=>c.id==='sm');
+  bandMeter(por,'porMeterFill','porMeterPct');
+  bandMeter(sm,'smMeterFill','smMeterPct');
+
+  const tabs = por.volumes.map(v=>
+      `<button data-tab="por:${v.vol}" class="${activeTab==='por:'+v.vol?'on':''}">Punk-O-Rama Vol. ${v.vol}</button>`).join('')
+    + `<button data-tab="sm" class="all ${activeTab==='sm'?'on':''}">Short Music for Short People</button>`;
+  document.getElementById('albumTabs').innerHTML = tabs;
+  document.querySelectorAll('#albumTabs button').forEach(b=>b.addEventListener('click',()=>{activeTab=b.dataset.tab;renderChallenge();}));
+
+  let tracks;
+  if(activeTab==='sm') tracks = sm.volumes[0].tracks;
+  else { const vol=activeTab.split(':')[1]; tracks=(por.volumes.find(v=>v.vol===vol)||{tracks:[]}).tracks; }
+  const row=tk=>{const s=effSeen(tk.artist); const nm=tk.song?`${tk.artist} - <span class="ts">${tk.song}</span>`:tk.artist;
+    return `<div class="track-row ${s?'seen':''}"><span class="tb">${nm}</span><span class="status-pill ${s?'on':''}">${s?'✓ '+t('seen'):t('notseen')}</span></div>`;};
+  document.getElementById('chPane').innerHTML = tracks.map(row).join('');
+}
+
+/* ===================== BUCKET LIST (owner-managed; caught auto-drop) ===================== */
+let bucketTab=0;
+function bagged(name){ return effSeen(name) || effSeen(name.split(' / ')[0]); }
+function renderBucket(){
+  const hunting = BUCKET_LIST.filter(n=>!bagged(n));   // seeing a band live removes it from the hunt
+  const baggedN = BUCKET_LIST.length - hunting.length;
+  document.getElementById("bucketCap").textContent =
+    `${hunting.length} ${t('bl_hunting')} · ${baggedN} ${t('bl_bagged')}`;
+
+  const ranges=[[1,25],[26,50],[51,75],[76,100]];
+  const tabsEl=document.getElementById("bucketMore");
+  tabsEl.innerHTML = `<div class="tabs bl-tabs">`+ranges.map((r,i)=>{
+    const n=hunting.slice(r[0]-1,r[1]).length;
+    return `<button data-bt="${i}" class="${bucketTab===i?'on':''}">Top ${r[0]}–${r[1]}${n?` · ${n}`:''}</button>`;
+  }).join('')+`</div>`;
+  tabsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{bucketTab=+b.dataset.bt;renderBucket();}));
+
+  const [lo,hi]=ranges[bucketTab];
+  const slice=hunting.slice(lo-1,hi);
+  const grid=document.getElementById("bucketGrid");
+  grid.innerHTML = slice.length ? slice.map((name,i)=>
+    `<div class="bl-item">
+      <span class="bl-rank">${lo+i}</span>
+      <span class="sk"><svg><use href="#i-skull"/></svg></span>
+      <span class="bl-name">${name}</span>
+      <span class="bl-status">${t('bucket_hunting')}</span>
+    </div>`).join("") : `<div class="fav-empty">${t('bl_emptyrange')}</div>`;
+}
+
+/* ===================== FAVOURITES / QUOTES ===================== */
+let favYear=null;
+function renderFavorites(){
+  if(!FAVORITES.length){ document.getElementById('favYears').innerHTML=''; document.getElementById('favCols').innerHTML=''; return; }
+  const years=[...new Set(FAVORITES.map(f=>f.year))].sort((a,b)=>b-a);
+  if(favYear===null || !years.includes(favYear)) favYear=years[0];
+  document.getElementById('favYears').innerHTML=years.map(y=>`<button data-y="${y}" class="${y==favYear?'on':''}">${y}</button>`).join('');
+  document.querySelectorAll('#favYears button').forEach(b=>b.addEventListener('click',()=>{favYear=+b.dataset.y;renderFavorites();}));
+  const f=FAVORITES.find(x=>x.year==favYear)||{albums:[],songs:[]};
+  const col=(title,items)=>`<div class="fav-col"><h4>${title}</h4>`+
+    ((items&&items.length)?items.map((it,i)=>`<div class="fav-item"><span class="fr">${i+1}</span><span><span class="fa">${it.artist}</span> - <span class="ft">${it.title}</span></span></div>`).join(''):`<div class="fav-empty">-</div>`)+`</div>`;
+  document.getElementById('favCols').innerHTML=col(t('fav_albums'),f.albums)+col(t('fav_songs'),f.songs);
+}
+
+/* ===================== TICKER (curated marquee, slow) ===================== */
+const MARQUEE_KNOWN = new Set(["Tool","A Perfect Circle","Puscifer","Primus","The Offspring","Bad Religion","Rancid","NOFX","Social Distortion","Volbeat","Alter Bridge","Zakk Sabbath","Black Sabbath","Pixies","Rise Against","Dropkick Murphys","Flogging Molly","Pennywise","Descendents","Blink-182","Vampire Weekend","Alabama Shakes","Devo","Weird Al Yankovic","Lagwagon","Anti-Flag","Millencolin","The Bouncing Souls","Bad Brains","Jimmy Eat World","New Found Glory"]);
+function renderTicker(){
+  const all=[...new Set(CONCERTS.flatMap(c=>c.bands))];
+  let names=all.filter(b=>MARQUEE_KNOWN.has(b));
+  if(names.length<12){                              // pad with most-seen bands
+    const bySeen=sortDesc(countBands(CONCERTS)).map(e=>e[0]);
+    for(const b of bySeen){ if(!names.includes(b)){ names.push(b); if(names.length>=16) break; } }
+  }
+  const piece=names.map(n=>`<span>${n}</span><span class="star">✶</span>`).join("");
+  const run=document.getElementById("ticker");
+  run.innerHTML=piece+piece;
+  run.style.animationDuration=Math.max(60, names.length*6)+'s';   // slow, ~6s per band
+}
+
+/* ===================== i18n APPLY ===================== */
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    const k=el.getAttribute("data-i18n"); if(I18N[lang][k]!==undefined) el.innerHTML=I18N[lang][k];
+  });
+  renderStats(); renderLedgerControls(); renderLedger(); renderChallenge(); renderBucket(); renderFavorites();
+}
+
+/* ===================== INIT ===================== */
+function renderAll(){
+  SEEN_BANDS = new Set(CONCERTS.flatMap(c=>c.bands));
+  renderStats(); renderMap(); renderLedgerControls(); renderLedger(); renderPhotos(); renderChallenge(); renderBucket(); renderFavorites(); renderTicker();
+}
+async function loadData(){
+  if(CONFIG.DATA_URL){
+    try{ const r=await fetch(CONFIG.DATA_URL,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)) CONCERTS=d; } }
+    catch(e){ console.warn("Concert feed unavailable, using sample data.",e); }
+  }
+  if(CONFIG.PHOTOS_URL){
+    try{ const r=await fetch(CONFIG.PHOTOS_URL,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) PHOTOS=d; } }
+    catch(e){ console.warn("Photo feed unavailable, using placeholders.",e); }
+  }
+  for(const [url,setter] of [[CONFIG.BUCKET_URL,d=>BUCKET_LIST=d],[CONFIG.FAV_URL,d=>FAVORITES=d],[CONFIG.COMPS_URL,d=>COMPS=d]]){
+    if(url){ try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) setter(d); } }catch(e){} }
+  }
+  CONCERTS = normalize(CONCERTS);   // apply Ready-to-Post filter + band parsing
+  renderAll();
+}
+loadData();
+
+["search","fBand","fVenue","fYear"].forEach(id=>document.getElementById(id).addEventListener("input", renderLedger));
+document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>{
+  lang=b.dataset.lang; document.querySelectorAll(".lang button").forEach(x=>x.classList.toggle("on",x===b)); applyLang();
+}));
+document.getElementById("burger").addEventListener("click",()=>document.getElementById("navlinks").classList.toggle("open"));
+document.querySelectorAll('#navlinks [data-stat]').forEach(a=>a.addEventListener('click',()=>{
+  statTab=a.dataset.stat; renderStatTab();
+}));
+document.querySelectorAll('#navlinks a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{
+  document.getElementById('navlinks').classList.remove('open');
+}));
+document.querySelectorAll("#navlinks a").forEach(a=>a.addEventListener("click",()=>document.getElementById("navlinks").classList.remove("open")));
+</script>
+</body>
+</html>
