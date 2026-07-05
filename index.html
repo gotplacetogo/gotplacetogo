@@ -285,6 +285,7 @@
   .bl-item .sk svg{width:100%;height:100%;display:block}
   .bl-name{font-family:'Anton',sans-serif;font-size:19px;letter-spacing:.5px;text-transform:uppercase;line-height:1.02;flex:1}
   .bl-status{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--ash);color:var(--muted);padding:4px 8px;white-space:nowrap}
+  .bl-item.caught .bl-rank{color:var(--gold)}
   .bl-item.caught{border-left-color:var(--gold)}
   .bl-item.caught .bl-name{color:var(--gold);text-decoration:line-through;text-decoration-color:var(--blood)}
   .bl-item.caught .bl-status{border:none;background:var(--blood);color:var(--bone)}
@@ -693,7 +694,7 @@ const I18N = {
     awo_label:"Awesometer", awo_cap:"shows - keep going",
     bl_hunting:"still hunting", bl_bagged:"bagged", bl_more:"Show all", bl_less:"Show top 10",
     por_done:"volumes cleared",
-    bucket_title:"The Bucket List", bucket_desc:"The Top 100 bands I'm still hunting to see live. It'll always be a Top 100 - there are always at least 100 bands I haven't caught yet :)",
+    bucket_title:"The Bucket List", bucket_desc:"My Top 25 hit-list of bands I still want to see live. Catch one and it stays on the list marked ✓ - I retire it and add a fresh target when I'm ready.",
     bucket_caught:"Caught", bucket_hunting:"Still hunting",
     about_title:"About Me",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Your photo<br>goes here",
@@ -740,7 +741,7 @@ const I18N = {
     awo_label:"Awesometer", awo_cap:"koncertów - nie zwalniaj",
     bl_hunting:"do zobaczenia", bl_bagged:"zaliczone", bl_more:"Pokaż wszystkie", bl_less:"Pokaż top 10",
     por_done:"zaliczonych tomów",
-    bucket_title:"Lista marzeń", bucket_desc:"Top 100 zespołów, które wciąż chcę zobaczyć na żywo. To zawsze będzie Top 100 - zawsze jest co najmniej 100 zespołów, których jeszcze nie widziałem :)",
+    bucket_title:"Lista marzeń", bucket_desc:"Moja lista Top 25 zespołów, które wciąż chcę zobaczyć na żywo. Gdy któryś zobaczę, zostaje na liście z oznaczeniem ✓ - z czasem go usuwam i dodaję nowy cel.",
     bucket_caught:"Zobaczone", bucket_hunting:"Do zobaczenia",
     about_title:"O mnie",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Tu trafi<br>Twoje zdjęcie",
@@ -839,7 +840,7 @@ const I18N = {
     bl_more:"Ver todas",
     bl_less:"Ver top 10",
     por_done:"volúmenes completados",
-    bucket_desc:"El Top 100 de bandas que aún persigo para ver en vivo. Siempre será un Top 100 - siempre hay al menos 100 bandas que todavía no cacé :)",
+    bucket_desc:"Mi Top 25 de bandas que aún quiero ver en vivo. Cuando veo una, se queda en la lista marcada con ✓ - la retiro y añado un nuevo objetivo cuando quiero.",
     bucket_caught:"Cazada",
     bucket_hunting:"Aún cazando",
     about_title:"Sobre mí",
@@ -1189,33 +1190,37 @@ function renderChallenge(){
   document.getElementById('chPane').innerHTML = tracks.map(row).join('');
 }
 
-/* ===================== BUCKET LIST (owner-managed; caught auto-drop) ===================== */
-let bucketTab=0;
+/* ===================== BUCKET LIST (owner-managed; caught rise to top, marked ✓ + year) ===================== */
 function bagged(name){ return effSeen(name) || effSeen(name.split(' / ')[0]); }
+function caughtYear(name){                       // earliest year this band appears in the concert log
+  const targets = name.split(' / ').map(norm);
+  let best=null;
+  for(const c of CONCERTS){
+    const y=parseInt(c.year); if(!y) continue;
+    if((c.bands||[]).some(b=>targets.includes(norm(b)))){ if(best===null||y<best) best=y; }
+  }
+  return best;
+}
 function renderBucket(){
-  const hunting = BUCKET_LIST.filter(n=>!bagged(n));   // seeing a band live removes it from the hunt
-  const baggedN = BUCKET_LIST.length - hunting.length;
+  const list = BUCKET_LIST.slice(0,25);            // Top 25 hit-list
+  const ranked = list.map((name,i)=>({name, rank:i+1, got:bagged(name), yr:bagged(name)?caughtYear(name):null}));
+  const caught  = ranked.filter(b=>b.got).sort((a,b)=>(b.yr||0)-(a.yr||0));  // newest catches first
+  const hunting = ranked.filter(b=>!b.got);
+  const ordered = [...caught, ...hunting];
+
   document.getElementById("bucketCap").textContent =
-    `${hunting.length} ${t('bl_hunting')} · ${baggedN} ${t('bl_bagged')}`;
+    `${hunting.length} ${t('bl_hunting')} · ${caught.length} ${t('bl_bagged')}`;
+  document.getElementById("bucketMore").innerHTML = "";   // single list, no tabs
 
-  const ranges=[[1,25],[26,50],[51,75],[76,100]];
-  const tabsEl=document.getElementById("bucketMore");
-  tabsEl.innerHTML = `<div class="tabs bl-tabs">`+ranges.map((r,i)=>{
-    const n=hunting.slice(r[0]-1,r[1]).length;
-    return `<button data-bt="${i}" class="${bucketTab===i?'on':''}">Top ${r[0]}–${r[1]}${n?` · ${n}`:''}</button>`;
-  }).join('')+`</div>`;
-  tabsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{bucketTab=+b.dataset.bt;renderBucket();}));
-
-  const [lo,hi]=ranges[bucketTab];
-  const slice=hunting.slice(lo-1,hi);
-  const grid=document.getElementById("bucketGrid");
-  grid.innerHTML = slice.length ? slice.map((name,i)=>
-    `<div class="bl-item">
-      <span class="bl-rank">${lo+i}</span>
+  document.getElementById("bucketGrid").innerHTML = ordered.map(b=>{
+    const tag = b.got ? `✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}` : t('bucket_hunting');
+    return `<div class="bl-item${b.got?' caught':''}">
+      <span class="bl-rank">${b.got?'★':b.rank}</span>
       <span class="sk"><svg><use href="#i-skull"/></svg></span>
-      <span class="bl-name">${name}</span>
-      <span class="bl-status">${t('bucket_hunting')}</span>
-    </div>`).join("") : `<div class="fav-empty">${t('bl_emptyrange')}</div>`;
+      <span class="bl-name">${b.name}</span>
+      <span class="bl-status">${tag}</span>
+    </div>`;
+  }).join("");
 }
 
 /* ===================== FAVOURITES / QUOTES ===================== */
