@@ -1,0 +1,20 @@
+[
+  {"year":2026,"kind":"song","artist":"Black Label Society","title":"Name in Blood"},
+  {"year":2015,"kind":"album","artist":"Enter Shikari","title":"The Mindsweep"},
+  {"year":2015,"kind":"album","artist":"Puscifer","title":"Money Shot"},
+  {"year":2003,"kind":"album","artist":"A Perfect Circle","title":"Thirteenth Step"},
+  {"year":2001,"kind":"album","artist":"Tool","title":"Lateralus"},
+  {"year":2001,"kind":"album","artist":"System of a Down","title":"Toxicity"},
+  {"year":2000,"kind":"album","artist":"A Perfect Circle","title":"Mer de Noms"},
+  {"year":2000,"kind":"album","artist":"Papa Roach","title":"Infest"},
+  {"year":1999,"kind":"album","artist":"AFI","title":"All Hallow's E.P."},
+  {"year":1998,"kind":"album","artist":"Bad Religion","title":"No Substance"},
+  {"year":1995,"kind":"album","artist":"Rancid","title":"...And Out Come the Wolves"},
+  {"year":1995,"kind":"album","artist":"Foo Fighters","title":"Foo Fighters"},
+  {"year":1994,"kind":"album","artist":"The Offspring","title":"Smash"},
+  {"year":1994,"kind":"album","artist":"Various Artists","title":"Punk-O-Rama Vol. 1"},
+  {"year":1992,"kind":"album","artist":"Rage Against the Machine","title":"Rage Against the Machine"},
+  {"year":1992,"kind":"album","artist":"W.A.S.P.","title":"The Crimson Idol"},
+  {"year":1991,"kind":"album","artist":"Nirvana","title":"Nevermind"},
+  {"year":1991,"kind":"album","artist":"Pearl Jam","title":"Ten"}
+]
