@@ -1,20 +1,31 @@
 [
   {"year":2026,"kind":"song","artist":"Black Label Society","title":"Name in Blood"},
-  {"year":2015,"kind":"album","artist":"Enter Shikari","title":"The Mindsweep"},
+  {"year":2025,"kind":"song","artist":"Black Label Society","title":"Name in Blood"},
+  {"year":2015,"kind":"album","artist":"Halestorm","title":"Everest"},
   {"year":2015,"kind":"album","artist":"Puscifer","title":"Money Shot"},
+  {"year":2015,"kind":"album","artist":"Halestorm","title":"Into the Wild Life"},
+  {"year":2012,"kind":"album","artist":"Halestorm","title":"The Strange Case Of.."},
   {"year":2007,"kind":"album","artist":"Black Light Burns","title":"Cruel Melody"},
+  {"year":2007,"kind":"album","artist":"Against Me!","title":"New Wave"},
+  {"year":2006,"kind":"album","artist":"Tool","title":"10000 Days"},
   {"year":2006,"kind":"album","artist":"Rise Against","title":"The Sufferer & the Witness"},
+  {"year":2005,"kind":"album","artist":"Black Label Society","title":"Mafia"},
+  {"year":2005,"kind":"album","artist":"Queens of the Stone Age","title":"Lullabies to Paralyze"},
+  {"year":2004,"kind":"album","artist":"Green Day","title":"American Idiot"}
   {"year":2004,"kind":"album","artist":"Splipknot","title":"Vol. 3: (The Subliminal Verses)"}
   {"year":2003,"kind":"album","artist":"Coma","title":"Pierwsze wyjście z mroku"},
   {"year":2003,"kind":"album","artist":"A Perfect Circle","title":"Thirteenth Step"},
   {"year":2002,"kind":"album","artist":"System of a Down","title":"Steal This Album!"},
   {"year":2002,"kind":"album","artist":"Kazik Na Żywo","title":"Tata Dealera"},
   {"year":2002,"kind":"album","artist":"Cool Kids of Death","title":"Cool Kids of Death"},
+  {"year":2002,"kind":"album","artist":"Audioslave","title":"Audioslave"},
   {"year":2001,"kind":"album","artist":"Tool","title":"Lateralus"},
   {"year":2001,"kind":"album","artist":"System of a Down","title":"Toxicity"},
   {"year":2000,"kind":"album","artist":"Papa Roach","title":"Infest"},
   {"year":2000,"kind":"album","artist":"Linkin Park","title":"Hybrid Theory"}
   {"year":2000,"kind":"album","artist":"A Perfect Circle","title":"Mer de Noms"},
+  {"year":2000,"kind":"album","artist":"Deftones","title":"White Pony"},
+  {"year":2000,"kind":"album","artist":"3 Doors Down","title":"The Better Life"},
   {"year":1999,"kind":"album","artist":"AFI","title":"All Hallow's E.P."},
   {"year":1998,"kind":"album","artist":"The Offspring","title":"Americana"},
   {"year":1998,"kind":"album","artist":"Kult","title":"Ostateczny krach systemu korporacji"}
@@ -22,9 +33,13 @@
   {"year":1998,"kind":"album","artist":"Korn","title":"Follow the Leader"}
   {"year":1997,"kind":"album","artist":"The Offspring","title":"Ixnay on the Hombre"},
   {"year":1997,"kind":"album","artist":"Guano Apes","title":"Proud Like a God"},
+  {"year":1997,"kind":"album","artist":"Pidżama Porno","title":"Złodzieje Zapalniczek"},
+  {"year":1996,"kind":"album","artist":"Tool","title":"Aenima"},
+  {"year":1996,"kind":"album","artist":"Pidżama Porno","title":"Futurista"},
   {"year":1995,"kind":"album","artist":"Rancid","title":"...And Out Come the Wolves"},
   {"year":1995,"kind":"album","artist":"Foo Fighters","title":"Foo Fighters"},
   {"year":1994,"kind":"album","artist":"The Offspring","title":"Smash"},
+  {"year":1994,"kind":"album","artist":"Kult","title":"Muj Wydafca"},
   {"year":1994,"kind":"album","artist":"Various Artists","title":"Punk-O-Rama Vol. 1"},
   {"year":1993,"kind":"album","artist":"Pearl Jam","title":"Vs."},
   {"year":1992,"kind":"album","artist":"Rage Against the Machine","title":"Rage Against the Machine"},
@@ -32,6 +47,7 @@
   {"year":1992,"kind":"album","artist":"W.A.S.P.","title":"The Crimson Idol"},
   {"year":1991,"kind":"album","artist":"Nirvana","title":"Nevermind"},
   {"year":1991,"kind":"album","artist":"Pearl Jam","title":"Ten"}
+  {"year":1988"kind":"album","artist":"Kult","title":"Spokojnie"}
   {"year":1984"kind":"album","artist":"Metallica","title":"Ride the Lightning"}
   {"year":1980,"kind":"album","artist":"Motorhead","title":"Ace of Spades"}
 ]
