@@ -211,23 +211,30 @@
   .stub .bnd{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.5px;text-transform:uppercase;line-height:1.05}
   .stub .ven{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
   .stub .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);border:1px dashed var(--ash);padding:4px 8px;white-space:nowrap}
+  .stub.planned{border-left-style:dashed;border-left-color:var(--gold);background:linear-gradient(90deg,rgba(245,179,10,.07),var(--concrete))}
+  .stub.planned .tag.plan{color:var(--gold);border:1px solid var(--gold)}
   .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
 
   /* PHOTOS / THE WALL */
+  .photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;justify-items:center;align-items:start;width:min(1640px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
+  .frame{background:#e9e4da;padding:18px 18px 0;box-shadow:8px 11px 0 rgba(0,0,0,.5);transform:rotate(-1.2deg);max-width:760px;width:100%}
+  .frame:nth-child(2){transform:rotate(1deg)}
+  .frame:nth-child(3){transform:rotate(-.6deg)}
   .carousel{position:relative;display:grid;grid-template-columns:1fr;justify-items:center}
-  .frame{background:#e9e4da;padding:14px 14px 0;box-shadow:6px 8px 0 rgba(0,0,0,.5);transform:rotate(-1.4deg);max-width:520px;width:100%}
   .frame .pic{aspect-ratio:4/3;background:
       repeating-linear-gradient(45deg,#2a2521 0 14px,#221d19 14px 28px);
       display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
   .frame .pic .ph-band{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,44px);color:rgba(241,179,10,.22);text-transform:uppercase;text-align:center;padding:0 16px;line-height:.95}
   .frame .pic img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-  .frame .cap{font-family:'Space Mono',monospace;font-size:13px;color:#2a2521;padding:12px 4px 16px;text-align:center}
+  .frame .cap{font-family:'Space Mono',monospace;font-size:15px;color:#2a2521;padding:14px 4px 18px;text-align:center}
+  @media(max-width:1100px){.photo-row{grid-template-columns:repeat(2,1fr)}.photo-row .frame:nth-child(3){display:none}}
   .carousel-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:26px}
   .carousel-ctrl button{background:var(--concrete);border:1px solid var(--ash);color:var(--bone);font-family:'Space Mono',monospace;font-size:14px;padding:8px 16px;cursor:pointer}
   .carousel-ctrl button:hover{border-color:var(--gold);color:var(--gold)}
   .dots{display:flex;gap:7px}
   .dots i{width:9px;height:9px;background:var(--ash);display:block;cursor:pointer}
   .dots i.on{background:var(--blood)}
+  .dots-count{font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);letter-spacing:.05em}
   .ph-note{text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;margin-top:20px}
 
   /* PUNK-O-RAMA */
@@ -287,6 +294,11 @@
   .bl-status{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--ash);color:var(--muted);padding:4px 8px;white-space:nowrap}
   .bl-item.caught .bl-rank{color:var(--gold)}
   .bl-item.caught{border-left-color:var(--gold)}
+  .bl-item.caught.faded{opacity:.5;transform:scale(.97)}
+  .bl-item.caught.faded .bl-name{font-size:15px}
+  .bl-item.crosshairs{border-left-color:var(--blood)}
+  .bl-item.crosshairs .bl-rank{color:var(--blood)}
+  .bl-item.crosshairs .bl-status{color:var(--blood);border-color:var(--blood)}
   .bl-item.caught .bl-name{color:var(--gold);text-decoration:line-through;text-decoration-color:var(--blood)}
   .bl-item.caught .bl-status{border:none;background:var(--blood);color:var(--bone)}
 
@@ -552,6 +564,7 @@
    ============================================================ */
 const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.json", FAV_URL:"data/favourites.json", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
 
+let PLANNED = [];   // upcoming shows (Status = Planned) - excluded from all stats
 let CONCERTS = [
   {bands:["Nothing More","Catch Your Breath","Archers"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2026, month:1, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
   {bands:["Apocalyptica"], venue:"Buckhead Theatre", city:"Atlanta", country:"US", year:2026, month:5, lat:33.8393, lng:-84.3801, status:"Ready to Post"},
@@ -695,7 +708,7 @@ const I18N = {
     bl_hunting:"still hunting", bl_bagged:"bagged", bl_more:"Show all", bl_less:"Show top 10",
     por_done:"volumes cleared",
     bucket_title:"The Bucket List", bucket_desc:"My Top 25 hit-list of bands I still want to see live. Catch one and it stays on the list marked ✓ - I retire it and add a fresh target when I'm ready.",
-    bucket_caught:"Caught", bucket_hunting:"Still hunting",
+    bucket_caught:"Caught", bucket_hunting:"Still hunting", bucket_crosshairs:"In crosshairs", bl_crosshairs:"in crosshairs", planned_tag:"Planned",
     about_title:"About Me",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Your photo<br>goes here",
     about_b1:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward.",
@@ -742,7 +755,7 @@ const I18N = {
     bl_hunting:"do zobaczenia", bl_bagged:"zaliczone", bl_more:"Pokaż wszystkie", bl_less:"Pokaż top 10",
     por_done:"zaliczonych tomów",
     bucket_title:"Lista marzeń", bucket_desc:"Moja lista Top 25 zespołów, które wciąż chcę zobaczyć na żywo. Gdy któryś zobaczę, zostaje na liście z oznaczeniem ✓ - z czasem go usuwam i dodaję nowy cel.",
-    bucket_caught:"Zobaczone", bucket_hunting:"Do zobaczenia",
+    bucket_caught:"Zobaczone", bucket_hunting:"Do zobaczenia", bucket_crosshairs:"Na celowniku", bl_crosshairs:"na celowniku", planned_tag:"Planowany",
     about_title:"O mnie",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Tu trafi<br>Twoje zdjęcie",
     about_b1:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód.",
@@ -841,7 +854,7 @@ const I18N = {
     bl_less:"Ver top 10",
     por_done:"volúmenes completados",
     bucket_desc:"Mi Top 25 de bandas que aún quiero ver en vivo. Cuando veo una, se queda en la lista marcada con ✓ - la retiro y añado un nuevo objetivo cuando quiero.",
-    bucket_caught:"Cazada",
+    bucket_caught:"Cazada", bucket_crosshairs:"En la mira", bl_crosshairs:"en la mira", planned_tag:"Planeado",
     bucket_hunting:"Aún cazando",
     about_title:"Sobre mí",
     about_tag:"When I've got the music, I've got a place to go.",
@@ -941,6 +954,9 @@ function coordsFor(v){ return VENUE_COORDS[venueKey(v)] || null; }
    coordinates gets a pin on Niepołomice market square (Rynek). */
 const HOME_COORDS = [50.0279, 20.2213];
 
+/* A row's status now carries the real plan state (Attend / Planned), not readiness -
+   the flow's READINESS filter already decided what publishes. */
+function isPlanned(r){ return /plan/i.test(String(r&&r.status||"")); }   // "Planned" -> upcoming, everything else counts as attended
 function normalize(rows){
   return rows.map(r=>{
       let lat=parseFloat(r.lat), lng=parseFloat(r.lng);
@@ -957,8 +973,7 @@ function normalize(rows){
         lat:isFinite(lat)?lat:"",
         lng:isFinite(lng)?lng:""};
     })
-    .filter(r=> (r.status||READY)===READY)   // only Ready to Post
-    .filter(r=> r.bands.length);
+    .filter(r=> r.bands.length);   // must have at least one band (readiness already filtered by the flow)
 }
 function sortDesc(obj){ return Object.entries(obj).sort((a,b)=>b[1]-a[1] || String(a[0]).localeCompare(String(b[0]))); }
 function countRows(rows,key){ const m={}; rows.forEach(r=>{ const v=r[key]; if(v==null||v==="") return; m[v]=(m[v]||0)+1; }); return m; }
@@ -1090,10 +1105,11 @@ function fillSelect(id, values, allLabel){
 }
 let ledgerYearInit=false;
 function renderLedgerControls(){
-  const allBands=[...new Set(CONCERTS.flatMap(c=>c.bands))].sort();
+  const universe = CONCERTS.concat(PLANNED);   // filters cover attended + planned
+  const allBands=[...new Set(universe.flatMap(c=>c.bands))].sort();
   fillSelect("fBand", allBands, t("f_allband"));
-  fillSelect("fVenue",[...new Set(CONCERTS.map(c=>c.venue))].sort(), t("f_allvenue"));
-  fillSelect("fYear", [...new Set(CONCERTS.map(c=>c.year))].sort((a,b)=>b-a), t("f_allyear"));
+  fillSelect("fVenue",[...new Set(universe.map(c=>c.venue).filter(Boolean))].sort(), t("f_allvenue"));
+  fillSelect("fYear", [...new Set(universe.map(c=>c.year))].sort((a,b)=>b-a), t("f_allyear"));
   document.getElementById("search").placeholder = t("ledger_search");
   if(!ledgerYearInit){                       // open on the current year by default
     const cy=new Date().getFullYear(), sel=document.getElementById("fYear");
@@ -1108,55 +1124,83 @@ function moAbbr(m){ return (m&&MONTHS[lang]&&MONTHS[lang][m])||MONTHS.en[m]||'';
 function renderLedger(){
   const q=document.getElementById("search").value.toLowerCase();
   const fb=document.getElementById("fBand").value, fv=document.getElementById("fVenue").value, fy=document.getElementById("fYear").value;
-  const rows = CONCERTS
-    .filter(c=>!fb||c.bands.includes(fb))
-    .filter(c=>!fv||c.venue===fv)
-    .filter(c=>!fy||c.year==fy)
-    .filter(c=>!q || (c.bands.join(' ')+c.venue+c.city).toLowerCase().includes(q))
-    .sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0) || a.venue.localeCompare(b.venue));
+  const match=c=>
+      (!fb||c.bands.includes(fb)) &&
+      (!fv||c.venue===fv) &&
+      (!fy||c.year==fy) &&
+      (!q || (c.bands.join(' ')+c.venue+c.city).toLowerCase().includes(q));
+  const planned = PLANNED.filter(match)
+      .sort((a,b)=>(a.year-b.year)||((a.month||0)-(b.month||0)));   // soonest first
+  const attended = CONCERTS.filter(match)
+      .sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0) || a.venue.localeCompare(b.venue));
   const list=document.getElementById("stubList");
-  if(!rows.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
-  list.innerHTML = rows.map(c=>
-    `<div class="stub">
+  if(!planned.length && !attended.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
+  const row=(c,plan)=>{
+    const place=[c.venue,[c.city,c.country].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+    const tag = plan ? `<span class="tag plan">◎ ${t('planned_tag')}</span>`
+                     : `<span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>`;
+    return `<div class="stub${plan?' planned':''}">
        <span class="dt">${c.month?`<span class="mo">${moAbbr(c.month)}</span>`:''}<span class="yr">'${String(c.year).slice(2)}</span></span>
-       <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${c.venue} · ${c.city}, ${c.country}</span></span>
-       <span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>
-     </div>`).join("");
+       <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${place}</span></span>
+       ${tag}
+     </div>`;
+  };
+  list.innerHTML = planned.map(c=>row(c,true)).join("") + attended.map(c=>row(c,false)).join("");
 }
 
 /* ===================== PHOTOS / 3-UP CAROUSEL ===================== */
 let photoStart=0, photoTimer=null, PHOTO_ORDER=[];
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function frameHTML(p){
-  const inner = p.img ? `<img src="${p.img}" alt="${p.caption||''}">` : `<div class="ph-band">${p.band||'PHOTO'}</div>`;
+  if(!p) return "";
+  const inner = p.img
+    ? `<img src="${p.img}" alt="${(p.caption||'').replace(/"/g,'&quot;')}" loading="lazy" decoding="async">`
+    : `<div class="ph-band">${p.band||'PHOTO'}</div>`;
   return `<div class="frame"><div class="pic">${inner}</div><div class="cap">${p.caption||''}</div></div>`;
 }
+function fitFrames(){
+  // size each frame to its photo's real orientation (portrait/landscape/square)
+  document.querySelectorAll('#photoRow .frame .pic img').forEach(img=>{
+    const set=()=>{ if(img.naturalWidth&&img.naturalHeight) img.parentElement.style.aspectRatio = img.naturalWidth+'/'+img.naturalHeight; };
+    if(img.complete) set(); else img.addEventListener('load',set,{once:true});
+  });
+}
+function perPage(){ return window.matchMedia('(max-width:1100px)').matches ? 2 : 3; }
 function renderPhotos(){
-  PHOTO_ORDER = shuffle(PHOTOS);
+  PHOTO_ORDER = shuffle(PHOTOS);           // fresh random order every visit
   photoStart=0;
-  const pages=Math.max(1, Math.ceil(PHOTO_ORDER.length/3));
-  document.getElementById("dots").innerHTML =
-    Array.from({length:pages}).map((_,i)=>`<i data-i="${i}" class="${i===0?'on':''}"></i>`).join("");
-  document.querySelectorAll("#dots i").forEach(d=>d.addEventListener("click",()=>showPhotos(+d.dataset.i*3)));
+  const step=perPage(), pages=Math.max(1, Math.ceil(PHOTO_ORDER.length/step));
+  const dots=document.getElementById("dots");
+  if(pages<=10){
+    dots.className="dots";
+    dots.innerHTML = Array.from({length:pages}).map((_,i)=>`<i data-i="${i}" class="${i===0?'on':''}"></i>`).join("");
+    dots.querySelectorAll("i").forEach(d=>d.addEventListener("click",()=>{showPhotos(+d.dataset.i*step);startPhotoTimer();}));
+  } else {
+    dots.className="dots dots-count";      // too many pages -> compact counter
+    dots.innerHTML = `<span id="photoCount"></span>`;
+  }
   showPhotos(0);
   startPhotoTimer();
 }
 function showPhotos(start){
   if(!PHOTO_ORDER.length) return;
-  const n=PHOTO_ORDER.length;
+  const n=PHOTO_ORDER.length, step=perPage();
   photoStart=((start%n)+n)%n;
-  const three=[0,1,2].map(k=>PHOTO_ORDER[(photoStart+k)%n]);
-  document.getElementById("photoRow").innerHTML = three.map(frameHTML).join("");
-  const page=Math.floor(photoStart/3);
+  const shown=Array.from({length:step},(_,k)=>PHOTO_ORDER[(photoStart+k)%n]);
+  document.getElementById("photoRow").innerHTML = shown.map(frameHTML).join("");
+  fitFrames();
+  const page=Math.floor(photoStart/step);
   document.querySelectorAll("#dots i").forEach((d,di)=>d.classList.toggle("on",di===page));
+  const cnt=document.getElementById("photoCount");
+  if(cnt) cnt.textContent = `${photoStart+1}–${Math.min(photoStart+step,n)} / ${n}`;
 }
 function startPhotoTimer(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   clearInterval(photoTimer);
-  photoTimer=setInterval(()=>showPhotos(photoStart+3), 5500);
+  photoTimer=setInterval(()=>showPhotos(photoStart+perPage()), 5500);
 }
-document.getElementById("prevPhoto").addEventListener("click",()=>{showPhotos(photoStart-3);startPhotoTimer();});
-document.getElementById("nextPhoto").addEventListener("click",()=>{showPhotos(photoStart+3);startPhotoTimer();});
+document.getElementById("prevPhoto").addEventListener("click",()=>{showPhotos(photoStart-perPage());startPhotoTimer();});
+document.getElementById("nextPhoto").addEventListener("click",()=>{showPhotos(photoStart+perPage());startPhotoTimer();});
 
 /* ===================== CHALLENGE TRACKER (read-only, driven by concert log) ===================== */
 const norm = s => s.toLowerCase().replace(/^the\s+/,'').replace(/[.\u2019']/g,'').trim();
@@ -1190,9 +1234,9 @@ function renderChallenge(){
   document.getElementById('chPane').innerHTML = tracks.map(row).join('');
 }
 
-/* ===================== BUCKET LIST (owner-managed; caught rise to top, marked ✓ + year) ===================== */
+/* ===================== BUCKET LIST (hunting -> in crosshairs -> caught) ===================== */
 function bagged(name){ return effSeen(name) || effSeen(name.split(' / ')[0]); }
-function caughtYear(name){                       // earliest year this band appears in the concert log
+function caughtYear(name){                       // earliest year this band appears in the ATTENDED log
   const targets = name.split(' / ').map(norm);
   let best=null;
   for(const c of CONCERTS){
@@ -1201,21 +1245,48 @@ function caughtYear(name){                       // earliest year this band appe
   }
   return best;
 }
+function plannedInfo(name){                      // soonest PLANNED show for this band -> {month,year}
+  const targets = name.split(' / ').map(norm);
+  let soon=null;
+  for(const c of PLANNED){
+    if((c.bands||[]).some(b=>targets.includes(norm(b)))){
+      const y=parseInt(c.year)||9999, m=parseInt(c.month)||0, key=y*100+m;
+      if(!soon || key<soon.key) soon={key, month:m, year:c.year};
+    }
+  }
+  return soon;
+}
+function mm(m){ return m? String(m).padStart(2,'0')+'/' : ''; }
 function renderBucket(){
   const list = BUCKET_LIST.slice(0,25);            // Top 25 hit-list
-  const ranked = list.map((name,i)=>({name, rank:i+1, got:bagged(name), yr:bagged(name)?caughtYear(name):null}));
-  const caught  = ranked.filter(b=>b.got).sort((a,b)=>(b.yr||0)-(a.yr||0));  // newest catches first
-  const hunting = ranked.filter(b=>!b.got);
-  const ordered = [...caught, ...hunting];
+  const nowY = new Date().getFullYear();
+  const ranked = list.map((name,i)=>{
+    const got=bagged(name);
+    const yr = got?caughtYear(name):null;
+    const plan = !got ? plannedInfo(name) : null;
+    const state = got?'caught':(plan?'crosshairs':'hunting');
+    return {name, rank:i+1, state, yr, plan, faded: got && yr!=null && yr < nowY-1};
+  });
+  const order={caught:0, crosshairs:1, hunting:2};
+  ranked.sort((a,b)=>
+    order[a.state]-order[b.state]
+    || (a.state==='caught' ? (b.yr||0)-(a.yr||0) : 0)                 // caught: newest first
+    || (a.state==='crosshairs' ? (a.plan.key)-(b.plan.key) : 0)      // crosshairs: soonest first
+    || a.rank-b.rank);
 
+  const caughtN=ranked.filter(b=>b.state==='caught').length;
+  const planN  =ranked.filter(b=>b.state==='crosshairs').length;
+  const huntN  =ranked.filter(b=>b.state==='hunting').length;
   document.getElementById("bucketCap").textContent =
-    `${hunting.length} ${t('bl_hunting')} · ${caught.length} ${t('bl_bagged')}`;
-  document.getElementById("bucketMore").innerHTML = "";   // single list, no tabs
+    `${huntN} ${t('bl_hunting')}${planN?` · ${planN} ${t('bl_crosshairs')}`:''} · ${caughtN} ${t('bl_bagged')}`;
+  document.getElementById("bucketMore").innerHTML = "";
 
-  document.getElementById("bucketGrid").innerHTML = ordered.map(b=>{
-    const tag = b.got ? `✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}` : t('bucket_hunting');
-    return `<div class="bl-item${b.got?' caught':''}">
-      <span class="bl-rank">${b.got?'★':b.rank}</span>
+  document.getElementById("bucketGrid").innerHTML = ranked.map(b=>{
+    let cls='bl-item', mark=b.rank, tag=t('bucket_hunting');
+    if(b.state==='caught'){ cls+=' caught'+(b.faded?' faded':''); mark='★'; tag=`✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}`; }
+    else if(b.state==='crosshairs'){ cls+=' crosshairs'; mark='◎'; tag=`◎ ${t('bucket_crosshairs')} ${mm(b.plan.month)}${b.plan.year}`; }
+    return `<div class="${cls}">
+      <span class="bl-rank">${mark}</span>
       <span class="sk"><svg><use href="#i-skull"/></svg></span>
       <span class="bl-name">${b.name}</span>
       <span class="bl-status">${tag}</span>
@@ -1289,7 +1360,9 @@ async function loadData(){
   for(const [url,setter] of [[CONFIG.BUCKET_URL,d=>BUCKET_LIST=d],[CONFIG.FAV_URL,d=>FAVORITES=groupFav(d)],[CONFIG.COMPS_URL,d=>COMPS=d]]){
     if(url){ try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) setter(d); } }catch(e){} }
   }
-  CONCERTS = normalize(CONCERTS);   // apply Ready-to-Post filter + band parsing
+  CONCERTS = normalize(CONCERTS);          // parse bands, coords, etc. (readiness filtered by flow)
+  PLANNED  = CONCERTS.filter(isPlanned);   // upcoming - drives wishlist "in crosshairs" only
+  CONCERTS = CONCERTS.filter(r=>!isPlanned(r));   // attended-only for every stat/map/ledger/challenge
   renderAll();
 }
 loadData();
