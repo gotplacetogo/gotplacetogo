@@ -172,12 +172,14 @@
   .fav-years{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
   .fav-years button{background:var(--concrete);border:1px solid var(--ash);color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer}
   .fav-years button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
-  .fav-cols{display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .fav-cols{display:grid;grid-template-columns:1fr;gap:30px}
   .fav-col h4{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;color:var(--gold)}
-  .fav-item{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--ash)}
-  .fav-item .fr{font-family:'Space Mono',monospace;color:var(--blood);font-size:12px;width:22px;flex:none}
+  .fav-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--ash)}
+  .fav-item .fr{font-family:'Space Mono',monospace;color:var(--blood);font-size:12px;width:22px;flex:none;line-height:1.5}
+  .fav-txt{display:flex;flex-direction:column;gap:3px}
   .fav-item .fa{font-weight:700}
   .fav-item .ft{color:var(--muted)}
+  .fav-item .fw{font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.5;color:var(--muted);opacity:.85;border-left:2px solid var(--blood);padding-left:9px;margin-top:2px}
   .fav-empty{color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:10px 0}
 
   /* MAP */
@@ -485,7 +487,7 @@
         <span class="kicker" data-i18n="kick_bucket">The Offspring</span>
         <span class="no">04</span>
         <h2 data-i18n="bucket_title">All I Want</h2>
-        <p data-i18n="bucket_desc">The white whales - bands I'm still hunting down. Catch one live and it drops off the list automatically.</p>
+        <p data-i18n="bucket_desc">My Top 25 hit-list of bands I still want to see live. Catch one and it stays on the list marked ✓ - I retire it and add a fresh target when I'm ready.</p>
       </div>
         <p class="bl-cap" id="bucketCap"></p>
       <div class="bl-more" id="bucketMore"></div>
@@ -562,7 +564,7 @@
    status:"Ready to Post" are counted.
    `bands` may be an array OR a delimited string ("A; B; C").
    ============================================================ */
-const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.json", FAV_URL:"data/favourites.json", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
+const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
 
 let PLANNED = [];   // upcoming shows (Status = Planned) - excluded from all stats
 let CONCERTS = [
@@ -984,8 +986,11 @@ function renderStats(){
   const bandC = countBands(CONCERTS);
   const venC  = countRows(CONCERTS,"venue");
   const cityC = countRows(CONCERTS,"city");
-  const years = CONCERTS.map(c=>c.year);
+  const nowY = new Date().getFullYear();
+  const years = CONCERTS.map(c=>parseInt(c.year,10))
+                        .filter(y=>Number.isFinite(y) && y>=1983 && y<=nowY+1);   // ignore blank/bad years (born 1983)
   const countries = new Set(CONCERTS.map(c=>c.country).filter(Boolean));
+  const span = years.length ? (Math.max(...years)-Math.min(...years)+1) : 0;
 
   const cards = [
     {num:CONCERTS.length, cap:t("st_shows")},
@@ -993,7 +998,7 @@ function renderStats(){
     {num:Object.keys(venC).length, cap:t("st_venues")},
     {num:Object.keys(cityC).length, cap:t("st_cities")},
     {num:countries.size, cap:t("st_countries")},
-    {num:(Math.max(...years)-Math.min(...years)+1), cap:t("st_years")}
+    {num:span, cap:t("st_years")}
   ];
   document.getElementById("statGrid").innerHTML = cards.map(c=>
     `<div class="stat"><div class="num">${c.num}</div><div class="cap">${c.cap}</div></div>`).join("");
@@ -1129,13 +1134,15 @@ function renderLedger(){
       (!fv||c.venue===fv) &&
       (!fy||c.year==fy) &&
       (!q || (c.bands.join(' ')+c.venue+c.city).toLowerCase().includes(q));
-  const planned = PLANNED.filter(match)
-      .sort((a,b)=>(a.year-b.year)||((a.month||0)-(b.month||0)));   // soonest first
-  const attended = CONCERTS.filter(match)
-      .sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0) || a.venue.localeCompare(b.venue));
+  // one timeline: planned + attended together, newest/furthest-future first
+  const all = [
+    ...PLANNED.filter(match).map(c=>({c, plan:true})),
+    ...CONCERTS.filter(match).map(c=>({c, plan:false}))
+  ].sort((a,b)=> (b.c.year-a.c.year) || ((b.c.month||0)-(a.c.month||0)) || a.c.venue.localeCompare(b.c.venue));
+
   const list=document.getElementById("stubList");
-  if(!planned.length && !attended.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
-  const row=(c,plan)=>{
+  if(!all.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
+  list.innerHTML = all.map(({c,plan})=>{
     const place=[c.venue,[c.city,c.country].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
     const tag = plan ? `<span class="tag plan">◎ ${t('planned_tag')}</span>`
                      : `<span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>`;
@@ -1144,8 +1151,7 @@ function renderLedger(){
        <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${place}</span></span>
        ${tag}
      </div>`;
-  };
-  list.innerHTML = planned.map(c=>row(c,true)).join("") + attended.map(c=>row(c,false)).join("");
+  }).join("");
 }
 
 /* ===================== PHOTOS / 3-UP CAROUSEL ===================== */
@@ -1304,7 +1310,9 @@ function renderFavorites(){
   document.querySelectorAll('#favYears button').forEach(b=>b.addEventListener('click',()=>{favYear=+b.dataset.y;renderFavorites();}));
   const f=FAVORITES.find(x=>x.year==favYear)||{albums:[],songs:[]};
   const col=(title,items)=>`<div class="fav-col"><h4>${title}</h4>`+
-    ((items&&items.length)?items.map((it,i)=>`<div class="fav-item"><span class="fr">${i+1}</span><span><span class="fa">${it.artist}</span> - <span class="ft">${it.title}</span></span></div>`).join(''):`<div class="fav-empty">-</div>`)+`</div>`;
+    ((items&&items.length)?items.map((it,i)=>
+      `<div class="fav-item"><span class="fr">${i+1}</span><span class="fav-txt"><span class="fline"><span class="fa">${it.artist}</span> - <span class="ft">${it.title}</span></span>${it.why?`<span class="fw">${it.why}</span>`:''}</span></div>`
+    ).join(''):`<div class="fav-empty">-</div>`)+`</div>`;
   document.getElementById('favCols').innerHTML=col(t('fav_albums'),f.albums)+col(t('fav_songs'),f.songs);
 }
 
@@ -1337,16 +1345,42 @@ function renderAll(){
   SEEN_BANDS = new Set(CONCERTS.flatMap(c=>c.bands));
   renderStats(); renderMap(); renderLedgerControls(); renderLedger(); renderPhotos(); renderChallenge(); renderBucket(); renderFavorites(); renderTicker();
 }
+/* Wishlist: one band per line (blank lines / "# comments" ignored). JSON array still accepted. */
+function parseListText(txt){
+  const t=txt.trim();
+  if(t.startsWith('[')){ try{ return JSON.parse(t); }catch(e){ return []; } }
+  return t.split(/\r?\n/).map(l=>l.trim()).filter(l=>l && !l.startsWith('#'));
+}
 function groupFav(rows){
   if(!Array.isArray(rows) || !rows.length || rows[0].albums) return rows;   // already nested by year
   const by={};
   rows.forEach(r=>{
     const y=+r.year; (by[y]=by[y]||{year:y, albums:[], songs:[]});
-    const item={artist:r.artist||r.band||"", title:r.title||r.album||""};
+    const item={artist:r.artist||r.band||"", title:r.title||r.album||"", why:r.why||""};
     if(String(r.kind||r.type||"album").toLowerCase()==='song') by[y].songs.push(item);
     else by[y].albums.push(item);
   });
   return Object.values(by).sort((a,b)=>b.year-a.year);
+}
+/* Parse the easy 2-line favourites format:
+     2026 song
+     Black Label Society | Name in Blood
+   (blank lines ignored; "|" separates artist and title). JSON is still accepted. */
+function parseFavText(txt){
+  const t=txt.trim();
+  if(t.startsWith('[')){ try{ return JSON.parse(t); }catch(e){ return []; } }   // backward-compat: JSON
+  const lines=t.split(/\r?\n/).map(l=>l.trim());
+  const out=[];
+  for(let i=0;i<lines.length;i++){
+    const h=lines[i].match(/^(\d{4})\s+(album|song)\b/i);
+    if(!h) continue;                                   // header line "YEAR kind"
+    let j=i+1; while(j<lines.length && !lines[j]) j++; // next non-blank = "Artist | Title"
+    if(j>=lines.length) break;
+    const p=lines[j].split('|');
+    out.push({year:+h[1], kind:h[2].toLowerCase(), artist:(p[0]||'').trim(), title:(p[1]||'').trim(), why:(p.slice(2).join('|')||'').trim()});
+    i=j;
+  }
+  return out;
 }
 async function loadData(){
   if(CONFIG.DATA_URL){
@@ -1357,7 +1391,15 @@ async function loadData(){
     try{ const r=await fetch(CONFIG.PHOTOS_URL,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) PHOTOS=d; } }
     catch(e){ console.warn("Photo feed unavailable, using placeholders.",e); }
   }
-  for(const [url,setter] of [[CONFIG.BUCKET_URL,d=>BUCKET_LIST=d],[CONFIG.FAV_URL,d=>FAVORITES=groupFav(d)],[CONFIG.COMPS_URL,d=>COMPS=d]]){
+  if(CONFIG.FAV_URL){
+    try{ const r=await fetch(CONFIG.FAV_URL,{cache:"no-store"}); if(r.ok){ const rows=parseFavText(await r.text()); if(rows.length) FAVORITES=groupFav(rows); } }
+    catch(e){ console.warn("Favourites feed unavailable, using embedded.",e); }
+  }
+  if(CONFIG.BUCKET_URL){
+    try{ const r=await fetch(CONFIG.BUCKET_URL,{cache:"no-store"}); if(r.ok){ const list=parseListText(await r.text()); if(list.length) BUCKET_LIST=list; } }
+    catch(e){ console.warn("Wishlist feed unavailable, using embedded.",e); }
+  }
+  for(const [url,setter] of [[CONFIG.COMPS_URL,d=>COMPS=d]]){
     if(url){ try{ const r=await fetch(url,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) setter(d); } }catch(e){} }
   }
   CONCERTS = normalize(CONCERTS);          // parse bands, coords, etc. (readiness filtered by flow)
