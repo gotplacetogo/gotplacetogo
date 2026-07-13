@@ -1,14 +1,15 @@
 [
   {"year": 2026, "kind": "song", "artist": "Black Label Society", "title": "Name in Blood"},
-  {"year": 2026, "kind": "song", "artist": "Black Label Society", "title": "Name in Blood"},
+  {"year": 2026, "kind": "song", "artist": "Social Distortion", "title": "Born to Kill"},
   {"year": 2026, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2026, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2026, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 2026, "kind": "album", "artist": "Black Label Society", "title": "Name in Blood"},
   {"year": 2026, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2026, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2026, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2026, "kind": "album", "artist": "placeholder", "title": "placeholder"},
-  {"year": 2026, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2015, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2015, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2015, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -19,6 +20,7 @@
   {"year": 2015, "kind": "album", "artist": "Puscifer", "title": "Money Shot"},
   {"year": 2015, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2015, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2012, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2012, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2012, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -29,6 +31,7 @@
   {"year": 2012, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2012, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2012, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  
   {"year": 2007, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2007, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2007, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -39,6 +42,7 @@
   {"year": 2007, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2007, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2007, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2006, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2006, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2006, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -49,6 +53,7 @@
   {"year": 2006, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2006, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2006, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2005, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2005, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2005, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -59,6 +64,7 @@
   {"year": 2005, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2005, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2005, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  
   {"year": 2004, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2004, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2004, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -69,6 +75,7 @@
   {"year": 2004, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2004, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2004, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2003, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2003, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2003, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -79,6 +86,7 @@
   {"year": 2003, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2003, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2003, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 2002, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2002, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2002, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -89,6 +97,7 @@
   {"year": 2002, "kind": "album", "artist": "Kazik Na Żywo", "title": "Tata Dealera"},
   {"year": 2002, "kind": "album", "artist": "System of a Down", "title": "Steal This Album!"},
   {"year": 2002, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 2001, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2001, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2001, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -99,6 +108,7 @@
   {"year": 2001, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2001, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 2001, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 2000, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2000, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 2000, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -109,6 +119,7 @@
   {"year": 2000, "kind": "album", "artist": "Deftones", "title": "White Pony"},
   {"year": 2000, "kind": "album", "artist": "Linkin Park", "title": "Hybrid Theory"},
   {"year": 2000, "kind": "album", "artist": "Papa Roach", "title": "Infest"},
+
   {"year": 1999, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1999, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1999, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -119,6 +130,7 @@
   {"year": 1999, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1999, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1999, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1998, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1998, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1998, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -130,6 +142,7 @@
   {"year": 1998, "kind": "album", "artist": "The Offspring", "title": "Americana"},
   {"year": 1998, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1997, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1997, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1997, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1997, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -139,6 +152,7 @@
   {"year": 1997, "kind": "album", "artist": "The Offspring", "title": "Ixnay on the Hombre"},
   {"year": 1997, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1997, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1996, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1996, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1996, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -149,6 +163,7 @@
   {"year": 1996, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1996, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1996, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 1995, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1995, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1995, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -159,6 +174,7 @@
   {"year": 1995, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1995, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1995, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1994, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1994, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1994, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -169,6 +185,7 @@
   {"year": 1994, "kind": "album", "artist": "Various Artists", "title": "Punk-O-Rama Vol. 1"},
   {"year": 1994, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1994, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 1993, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1993, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1993, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -179,6 +196,7 @@
   {"year": 1993, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1993, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1993, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1992, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1992, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1992, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -189,6 +207,7 @@
   {"year": 1992, "kind": "album", "artist": "W.A.S.P.", "title": "The Crimson Idol"},
   {"year": 1992, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1992, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
   {"year": 1991, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1991, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1991, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -199,6 +218,7 @@
   {"year": 1991, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1991, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1991, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+ 
   {"year": 1988, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1988, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1988, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -209,6 +229,18 @@
   {"year": 1988, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1988, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1988, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
+  {"year": 1985, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1985, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  
   {"year": 1984, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1984, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1984, "kind": "song", "artist": "placeholder", "title": "placeholder"},
@@ -219,6 +251,18 @@
   {"year": 1984, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1984, "kind": "album", "artist": "placeholder", "title": "placeholder"},
   {"year": 1984, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+
+  {"year": 1983, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "song", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  {"year": 1983, "kind": "album", "artist": "placeholder", "title": "placeholder"},
+  
   {"year": 1980, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1980, "kind": "song", "artist": "placeholder", "title": "placeholder"},
   {"year": 1980, "kind": "song", "artist": "placeholder", "title": "placeholder"},
