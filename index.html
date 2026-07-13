@@ -287,7 +287,8 @@
   footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
 
   /* BUCKET LIST */
-  .bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .bl-col{display:flex;flex-direction:column;gap:12px}
   .bl-item{display:flex;align-items:center;gap:14px;background:var(--concrete);border:1px solid var(--ash);border-left:6px solid var(--blood);padding:14px 16px;transition:transform .12s,background .12s}
   .bl-item:hover{transform:translateX(4px);background:#1d1814}
   .bl-item .sk{width:24px;height:26px;flex:none;color:var(--gold)}
@@ -1264,7 +1265,7 @@ function plannedInfo(name){                      // soonest PLANNED show for thi
 }
 function mm(m){ return m? String(m).padStart(2,'0')+'/' : ''; }
 function renderBucket(){
-  const list = BUCKET_LIST.slice(0,25);            // Top 25 hit-list
+  const list = BUCKET_LIST.slice(0,30);            // Top 30 hit-list (15 per column)
   const nowY = new Date().getFullYear();
   const ranked = list.map((name,i)=>{
     const got=bagged(name);
@@ -1287,7 +1288,7 @@ function renderBucket(){
     `${huntN} ${t('bl_hunting')}${planN?` · ${planN} ${t('bl_crosshairs')}`:''} · ${caughtN} ${t('bl_bagged')}`;
   document.getElementById("bucketMore").innerHTML = "";
 
-  document.getElementById("bucketGrid").innerHTML = ranked.map(b=>{
+  const itemHTML=b=>{
     let cls='bl-item', mark=b.rank, tag=t('bucket_hunting');
     if(b.state==='caught'){ cls+=' caught'+(b.faded?' faded':''); mark='★'; tag=`✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}`; }
     else if(b.state==='crosshairs'){ cls+=' crosshairs'; mark='◎'; tag=`◎ ${t('bucket_crosshairs')} ${mm(b.plan.month)}${b.plan.year}`; }
@@ -1297,7 +1298,12 @@ function renderBucket(){
       <span class="bl-name">${b.name}</span>
       <span class="bl-status">${tag}</span>
     </div>`;
-  }).join("");
+  };
+  const half=Math.ceil(ranked.length/2);           // left column fills first, then right
+  const left=ranked.slice(0,half).map(itemHTML).join("");
+  const right=ranked.slice(half).map(itemHTML).join("");
+  document.getElementById("bucketGrid").innerHTML =
+    `<div class="bl-col">${left}</div><div class="bl-col">${right}</div>`;
 }
 
 /* ===================== FAVOURITES / QUOTES ===================== */
