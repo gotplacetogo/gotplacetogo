@@ -1,0 +1,25 @@
+# One band per line. Order = rank. Blank lines and #comments are ignored.
+Tenacious D
+Down by Law
+Polish Metal Alliance
+Korn
+Black Light Burns
+Ashes Divide
+Ten Foot Pole
+Body Count
+Puddle Of Mudd
+Eagles of Death Metal
+Jane's Addiction
+Tom Morello
+Rage Against the Machine
+Pretty Reckless
+Hanabie
+The HU
+Rob Zombie
+Babymetal
+The Distillers
+Greta Van Fleet
+Limp Bizkit
+Guttermouth
+Bloodhound Gang
+Eminem
