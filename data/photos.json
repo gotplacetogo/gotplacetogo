@@ -1,8 +1,4 @@
 [
-  {"img":"photos/2017_SOAD_Krakow.jpg","caption":"System of a Down - Kraków (My & My Crowd surfing) · Kraków (PL) '17"},
-  {"img":"photos/2018_Nita Strauss & Angel Vivaldi & Jacky Vincent The Guitar Collective 2018.jpg","caption":"Nita Strauss (Alice Cooper, The Iron Maidens) & Angel Vivaldi & Jacky Vincent (Falling in Reverse) The Guitar Collective 2018 · Denver, CO (USA) '18"},
-  {"img":"photos/photo3.jpg","caption":"Crowd-surf blur · Meerhout '17"},
-  {"img":"photos/photo4.jpg","caption":"Tool · Tauron Arena '22"},
-  {"img":"photos/photo5.jpg","caption":"The Exploited · The Masquerade '24"},
-  {"img":"photos/photo6.jpg","caption":"Front row · Coca-Cola Roxy '24"}
+  {"img":"photos/2017_SOAD_Krakow.jpg","caption":"System of a Down - my crowd surfing","meta":"Kraków, PL '17"},
+  {"img":"photos/2018_Nita Strauss & Angel Vivaldi & Jacky Vincent The Guitar Collective 2018.jpg","caption":"Nita Strauss, Angel Vivaldi & Jacky Vincent - The Guitar Collective","meta":"Denver, CO '18"}
 ]
