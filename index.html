@@ -301,6 +301,12 @@
   footer .fg-l{bottom:-18px;left:3%;width:300px;height:104px;transform:rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
   footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
 
+  /* PLAYLISTS */
+  .pl-tabs{margin-bottom:18px}
+  .pl-frame{border:2px dashed #4a443d;padding:10px;background:#16130f}
+  .pl-frame iframe{display:block;width:100%;border:0;border-radius:12px}
+  .pl-empty{padding:40px 16px;text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:13px}
+
   /* BUCKET LIST */
   .bl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-items:start;width:min(1720px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
   .bl-col{display:flex;flex-direction:column;gap:12px}
@@ -404,6 +410,7 @@
           </div>
         </div>
         <div class="nav-item"><a href="#favorites" data-i18n="nav_fav">The Best Of</a></div>
+        <div class="nav-item"><a href="#playlists" data-i18n="nav_pl">Sound System</a></div>
         <div class="nav-item"><a href="#about" data-i18n="nav_about">About</a></div>
       </div>
       <div class="lang">
@@ -554,10 +561,24 @@
     </div>
   </section>
 
+  <!-- PLAYLISTS -->
+  <section id="playlists">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker" data-i18n="pl_kick">Operation Ivy</span>
+        <span class="no">07</span>
+        <h2 data-i18n="pl_title">Sound System</h2>
+        <p data-i18n="pl_desc">Press play. This is what all of it actually sounds like.</p>
+      </div>
+      <div class="tabs pl-tabs" id="plTabs"></div>
+      <div class="pl-frame" id="plFrame"></div>
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section id="about">
     <div class="wrap">
-      <div class="sec-head"><span class="no">07</span><h2 data-i18n="about_title">About Me</h2></div>
+      <div class="sec-head"><span class="no">08</span><h2 data-i18n="about_title">About Me</h2></div>
       <div class="about-layout">
         <div class="about-text">
           <p class="about-tagline" data-i18n="about_tag">When I've got the music, I've got a place to go.</p>
@@ -593,7 +614,7 @@
    status:"Ready to Post" are counted.
    `bands` may be an array OR a delimited string ("A; B; C").
    ============================================================ */
-const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
+const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", PLAYLIST_URL:"data/playlists.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
 
 let PLANNED = [];   // upcoming shows (Status = Planned) - excluded from all stats
 let CONCERTS = [
@@ -739,6 +760,7 @@ const I18N = {
     bl_hunting:"still hunting", bl_bagged:"bagged", bl_more:"Show all", bl_less:"Show top 10",
     por_done:"volumes cleared",
     bucket_title:"The Bucket List", bucket_desc:"My Top 25 hit-list of bands I still want to see live. Catch one and it stays on the list marked ✓ - I retire it and add a fresh target when I'm ready.",
+    nav_pl:"Sound System", pl_kick:"Operation Ivy", pl_title:"Sound System", pl_desc:"Press play. This is what all of it actually sounds like.", pl_empty:"No playlist yet - drop one into data/playlists.txt",
     bucket_caught:"Caught", bucket_hunting:"Still hunting", bucket_crosshairs:"In crosshairs", bl_crosshairs:"in crosshairs", planned_tag:"Planned",
     about_title:"About Me",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Your photo<br>goes here",
@@ -786,6 +808,7 @@ const I18N = {
     bl_hunting:"do zobaczenia", bl_bagged:"zaliczone", bl_more:"Pokaż wszystkie", bl_less:"Pokaż top 10",
     por_done:"zaliczonych tomów",
     bucket_title:"Lista marzeń", bucket_desc:"Moja lista Top 25 zespołów, które wciąż chcę zobaczyć na żywo. Gdy któryś zobaczę, zostaje na liście z oznaczeniem ✓ - z czasem go usuwam i dodaję nowy cel.",
+    nav_pl:"Sound System", pl_kick:"Operation Ivy", pl_title:"Sound System", pl_desc:"Wciśnij play. Tak to wszystko naprawdę brzmi.", pl_empty:"Jeszcze nie ma playlisty",
     bucket_caught:"Zobaczone", bucket_hunting:"Do zobaczenia", bucket_crosshairs:"Na celowniku", bl_crosshairs:"na celowniku", planned_tag:"Planowany",
     about_title:"O mnie",
     about_tag:"When I've got the music, I've got a place to go.", about_photo:"Tu trafi<br>Twoje zdjęcie",
@@ -885,6 +908,7 @@ const I18N = {
     bl_less:"Ver top 10",
     por_done:"volúmenes completados",
     bucket_desc:"Mi Top 25 de bandas que aún quiero ver en vivo. Cuando veo una, se queda en la lista marcada con ✓ - la retiro y añado un nuevo objetivo cuando quiero.",
+    nav_pl:"Sound System", pl_kick:"Operation Ivy", pl_title:"Sound System", pl_desc:"Dale al play. Así suena todo esto de verdad.", pl_empty:"Todavía no hay lista de reproducción",
     bucket_caught:"Cazada", bucket_crosshairs:"En la mira", bl_crosshairs:"en la mira", planned_tag:"Planeado",
     bucket_hunting:"Aún cazando",
     about_title:"Sobre mí",
@@ -1388,7 +1412,41 @@ function renderFavorites(){
   document.getElementById('favCols').innerHTML=col(t('fav_albums'),f.albums)+col(t('fav_songs'),f.songs);
 }
 
-/* ===================== TICKER (curated marquee, slow) ===================== */
+/* ===================== PLAYLISTS (Sound System) ===================== */
+let PLAYLISTS = [];      // [{label, id}]
+let plTab = 0;
+/* data/playlists.txt - one per line:  Label | Spotify playlist URL or ID */
+function parsePlaylists(txt){
+  const t=String(txt||"").trim();
+  if(!t) return [];
+  return t.split(/\r?\n/).map(l=>l.trim())
+    .filter(l=>l && !l.startsWith('#'))
+    .map(line=>{
+      const p=line.split('|');
+      const label=(p[0]||'').trim();
+      const raw=(p.slice(1).join('|')||'').trim();
+      const m=raw.match(/playlist[/:]([A-Za-z0-9]+)/) || raw.match(/^([A-Za-z0-9]{15,})$/);
+      return m ? {label: label||'Playlist', id:m[1]} : null;
+    })
+    .filter(Boolean)
+    .slice(0,6);          // sensible cap
+}
+function renderPlaylists(){
+  const tabsEl=document.getElementById('plTabs'), frameEl=document.getElementById('plFrame');
+  if(!tabsEl||!frameEl) return;
+  if(!PLAYLISTS.length){
+    tabsEl.innerHTML=''; frameEl.innerHTML=`<div class="pl-empty">${t('pl_empty')}</div>`;
+    return;
+  }
+  // a single playlist needs no tabs
+  tabsEl.innerHTML = PLAYLISTS.length>1
+    ? PLAYLISTS.map((p,i)=>`<button data-pl="${i}" class="${i===plTab?'on':''}">${p.label}</button>`).join('')
+    : '';
+  tabsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{plTab=+b.dataset.pl;renderPlaylists();}));
+  const p=PLAYLISTS[Math.min(plTab,PLAYLISTS.length-1)];
+  // only the active playlist is embedded, so extra tabs cost nothing until opened
+  frameEl.innerHTML=`<iframe src="https://open.spotify.com/embed/playlist/${p.id}?utm_source=generator" height="352" loading="lazy" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="${p.label}"></iframe>`;
+}
 const MARQUEE_KNOWN = new Set(["Tool","A Perfect Circle","Puscifer","Primus","The Offspring","Bad Religion","Rancid","NOFX","Social Distortion","Volbeat","Alter Bridge","Zakk Sabbath","Black Sabbath","Pixies","Rise Against","Dropkick Murphys","Flogging Molly","Pennywise","Descendents","Blink-182","Vampire Weekend","Alabama Shakes","Devo","Weird Al Yankovic","Lagwagon","Anti-Flag","Millencolin","The Bouncing Souls","Bad Brains","Jimmy Eat World","New Found Glory"]);
 function renderTicker(){
   const all=[...new Set(CONCERTS.flatMap(c=>c.bands))];
@@ -1417,7 +1475,7 @@ function applyLang(){
 /* ===================== INIT ===================== */
 function renderAll(){
   SEEN_BANDS = new Set(CONCERTS.flatMap(c=>c.bands));
-  renderStats(); renderMap(); renderLedgerControls(); renderLedger(); renderPhotos(); renderChallenge(); renderBucket(); renderFavorites(); renderTicker();
+  renderStats(); renderMap(); renderLedgerControls(); renderLedger(); renderPhotos(); renderChallenge(); renderBucket(); renderFavorites(); renderPlaylists(); renderTicker();
 }
 /* Wishlist: one band per line (blank lines / "# comments" ignored). JSON array still accepted. */
 function parseListText(txt){
@@ -1468,6 +1526,10 @@ async function loadData(){
   if(CONFIG.FAV_URL){
     try{ const r=await fetch(CONFIG.FAV_URL,{cache:"no-store"}); if(r.ok){ const rows=parseFavText(await r.text()); if(rows.length) FAVORITES=groupFav(rows); } }
     catch(e){ console.warn("Favourites feed unavailable, using embedded.",e); }
+  }
+  if(CONFIG.PLAYLIST_URL){
+    try{ const r=await fetch(CONFIG.PLAYLIST_URL,{cache:"no-store"}); if(r.ok) PLAYLISTS=parsePlaylists(await r.text()); }
+    catch(e){ console.warn("Playlist feed unavailable.",e); }
   }
   if(CONFIG.BUCKET_URL){
     try{ const r=await fetch(CONFIG.BUCKET_URL,{cache:"no-store"}); if(r.ok){ const list=parseListText(await r.text()); if(list.length) BUCKET_LIST=list; } }
