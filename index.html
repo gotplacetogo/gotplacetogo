@@ -217,7 +217,8 @@
   .stub .ven{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
   .stub .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);border:1px dashed var(--ash);padding:4px 8px;white-space:nowrap}
   .stub-end{display:flex;align-items:center;gap:12px;justify-self:end}
-  .stub-end .flag{font-size:20px;line-height:1;width:26px;text-align:center;flex:none;filter:saturate(1.1)}
+  .stub-end .flag{font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);width:30px;text-align:center;flex:none;display:flex;align-items:center;justify-content:center}
+  .flag-img{width:28px;height:auto;display:block;border:1px solid rgba(255,255,255,.18);box-shadow:0 1px 3px rgba(0,0,0,.6)}
   .stub.planned{border-left-style:dashed;border-left-color:var(--gold);background:linear-gradient(90deg,rgba(245,179,10,.07),var(--concrete))}
   .stub.planned .tag.plan{color:var(--gold);border:1px solid var(--gold)}
   .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
@@ -263,7 +264,7 @@
   .about-layout{display:grid;grid-template-columns:1.55fr .85fr;gap:46px;align-items:start}
   .about-tagline{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,52px);line-height:1.04;text-transform:uppercase;color:var(--gold);margin-bottom:28px;max-width:22ch}
   .about-photo{aspect-ratio:3/4;border:2px dashed #4a443d;background:#16130f;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.7;position:sticky;top:90px;overflow:hidden}
-  .about-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .about-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% 42%;z-index:1}
   .about-photo:has(img){border-style:solid;border-color:var(--blood)}
   @media(max-width:760px){.about-layout{grid-template-columns:1fr;gap:30px}.about-photo{aspect-ratio:4/3;position:static}}
   .about-prose{max-width:760px}
@@ -294,7 +295,7 @@
   footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
 
   /* BUCKET LIST */
-  .bl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;align-items:start}
+  .bl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px;align-items:start;width:min(1720px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
   .bl-col{display:flex;flex-direction:column;gap:12px}
   .bl-item{display:flex;align-items:center;gap:12px;background:var(--concrete);border:1px solid var(--ash);border-left:6px solid var(--ash);padding:13px 14px;transition:transform .12s,background .12s}
   .bl-item:hover{transform:translateX(4px);background:#1d1814}
@@ -326,7 +327,7 @@
     .stat-grid,.records{grid-template-columns:repeat(2,1fr)}
     .charts2,.charts3{grid-template-columns:1fr}
     .vol-grid{grid-template-columns:1fr}
-    .bl-grid{grid-template-columns:1fr}
+    .bl-grid{grid-template-columns:1fr;width:auto;margin-left:0;transform:none}
     .stub-end{flex-direction:row}
     .photo-row{grid-template-columns:1fr;gap:30px}
     .fav-cols{grid-template-columns:1fr}
@@ -428,7 +429,7 @@
         <span class="kicker" data-i18n="kick_stats">Iron Maiden</span>
         <span class="no">666</span>
         <h2 data-i18n="stats_title">The Number of the Beast</h2>
-        <p data-i18n="stats_desc">Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)</p>
+        <p data-i18n="stats_desc">Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers 🤘😎</p>
       </div>
       <div class="stat-grid" id="statGrid"></div>
       <div class="records" id="records"></div>
@@ -701,7 +702,7 @@ const I18N = {
     nav_stats:"The Numbers", nav_shows:"The Journal", nav_hunt:"The Hunt", nav_top10:"Top 10", nav_byshows:"Shows by Year", nav_bybands:"Bands by Year", nav_map:"Map", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama Challenge", nav_about:"About", nav_bucket:"Bands to See", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
-    stats_title:"The Number of the Beast", stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)",
+    stats_title:"The Number of the Beast", stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers 🤘😎",
     ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
     bucket_title:"All I Want", kick_bucket:"The Offspring",
     show_n:"show", shows_n:"shows", loc_unknown:"Location unknown",
@@ -713,7 +714,7 @@ const I18N = {
     hero_sub:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward. Because “when I've got the music, I've got a place to go.”",
     st_shows:"Total shows", st_bands:"Bands seen", st_venues:"Venues", st_cities:"Cities", st_countries:"Countries", st_years:"Years active",
     rec_band:"Most-seen band", rec_venue:"Most-visited venue", rec_city:"Most-visited city", rec_times:"times",
-    stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)",
+    stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers 🤘😎",
     stats_topbands:"Top 10 bands", stats_topvenues:"Top 10 venues", stats_topcities:"Top 10 cities",
     map_title:"I Want to Conquer the World", map_desc:"Every pin is a memory - and every memory comes with its own soundtrack.",
     ledger_desc:"All the concerts, all the venues, all the bands - by date. Filter it however you please :)",
@@ -748,7 +749,7 @@ const I18N = {
     nav_stats:"Liczby", nav_shows:"Dziennik", nav_hunt:"Poszukiwany/Poszukiwana", nav_top10:"Top 10", nav_byshows:"Koncerty wg roku", nav_bybands:"Zespoły wg roku", nav_map:"Mapa", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama", nav_about:"O mnie", nav_bucket:"Na celowniku", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
-    stats_title:"The Number of the Beast", stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach :)",
+    stats_title:"The Number of the Beast", stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach 🤘😎",
     ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
     bucket_title:"All I Want", kick_bucket:"The Offspring",
     show_n:"koncert", shows_n:"koncerty", loc_unknown:"Miejsce nieznane",
@@ -760,7 +761,7 @@ const I18N = {
     hero_sub:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód. Bo „when I've got the music, I've got a place to go”.",
     st_shows:"Koncerty łącznie", st_bands:"Widziane zespoły", st_venues:"Miejsca", st_cities:"Miasta", st_countries:"Kraje", st_years:"Lata aktywności",
     rec_band:"Najczęściej widziany zespół", rec_venue:"Najczęściej odwiedzane miejsce", rec_city:"Najczęściej odwiedzane miasto", rec_times:"razy",
-    stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach :)",
+    stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach 🤘😎",
     stats_topbands:"Top 10 zespołów", stats_topvenues:"Top 10 miejsc", stats_topcities:"Top 10 miast",
     map_title:"I Want to Conquer the World", map_desc:"Każda pinezka to wspomnienie - a każde wspomnienie ma własną ścieżkę dźwiękową.",
     ledger_desc:"Wszystkie koncerty, wszystkie miejsca, wszystkie zespoły - według daty. Filtruj jak chcesz :)",
@@ -822,7 +823,7 @@ const I18N = {
     bucket_title:"All I Want",
     fav_title:"All Killer No Filler",
     quotes_title:"Scream It Back",
-    stats_desc:"La cantidad nunca fue el objetivo - pero cada concierto me deja con ganas de otro. Así que sigo: bandas nuevas, las que amo, las que ya vi diez veces. Me hace verdaderamente feliz ver en vivo a esta gente talentosa que decidió dedicar su vida a convertir su música en la banda sonora de la nuestra. Aun así - aquí está, toda mi vida de conciertos en números :)",
+    stats_desc:"La cantidad nunca fue el objetivo - pero cada concierto me deja con ganas de otro. Así que sigo: bandas nuevas, las que amo, las que ya vi diez veces. Me hace verdaderamente feliz ver en vivo a esta gente talentosa que decidió dedicar su vida a convertir su música en la banda sonora de la nuestra. Aun así - aquí está, toda mi vida de conciertos en números 🤘😎",
     stats_byyear:"Por año",
     tab_top10:"Top 10",
     yr_shows:"Shows por año",
@@ -1147,11 +1148,12 @@ const MONTHS={en:['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
               pl:['','Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'],
               es:['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']};
 function moAbbr(m){ return (m&&MONTHS[lang]&&MONTHS[lang][m])||MONTHS.en[m]||''; }
-/* ISO country code -> flag emoji (works for any 2-letter code) */
+/* Country code -> real flag image. (Windows has no flag-emoji font, so we use images.) */
 function flagOf(cc){
-  const c=String(cc||"").trim().toUpperCase();
-  if(!/^[A-Z]{2}$/.test(c)) return "";
-  return String.fromCodePoint(...[...c].map(ch=>0x1F1E6 + ch.charCodeAt(0) - 65));
+  const c=String(cc||"").trim().toLowerCase();
+  if(!/^[a-z]{2}$/.test(c)) return "";
+  const up=c.toUpperCase();
+  return `<img class="flag-img" src="https://flagcdn.com/w40/${c}.png" alt="${up}" title="${up}" loading="lazy" onerror="this.replaceWith(document.createTextNode('${up}'))">`;
 }
 function renderLedger(){
   const q=document.getElementById("search").value.toLowerCase();
