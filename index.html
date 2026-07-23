@@ -51,10 +51,13 @@
 
   /* HERO */
   .hero{position:relative;padding:72px 0 60px;border-bottom:2px solid var(--ash);overflow:hidden}
-  .hero::before{content:"";position:absolute;inset:0;z-index:0;opacity:.24;
-    background:radial-gradient(circle at 20% 30%, var(--blood) 0 1.5px, transparent 2px),
-              radial-gradient(circle at 70% 60%, var(--gold) 0 1.5px, transparent 2px);
-    background-size:9px 9px, 13px 13px;}
+  /* silkscreen / gig-poster texture: fine diagonal hatching + torn-edge glow */
+  .hero::before{content:"";position:absolute;inset:0;z-index:0;opacity:.5;
+    background:repeating-linear-gradient(115deg, rgba(209,16,27,.16) 0 2px, transparent 2px 9px),
+               repeating-linear-gradient(65deg, rgba(245,179,10,.07) 0 1px, transparent 1px 14px);}
+  .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 0%, rgba(209,16,27,.16), transparent 62%),
+               linear-gradient(to bottom, transparent 55%, rgba(12,10,9,.92) 100%);}
   .hero-inner{position:relative;z-index:2}
   .eyebrow{display:inline-block;background:var(--blood);color:var(--bone);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;padding:5px 10px;transform:rotate(-1.5deg)}
   .hero h1{font-size:clamp(60px,13.5vw,176px);margin:14px 0 6px;color:var(--bone);letter-spacing:-1px;transform:skewX(-4deg);text-shadow:3px 3px 0 var(--blood),6px 6px 0 var(--ink),9px 9px 0 var(--blood)}
@@ -213,6 +216,8 @@
   .stub .bnd{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.5px;text-transform:uppercase;line-height:1.05}
   .stub .ven{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
   .stub .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);border:1px dashed var(--ash);padding:4px 8px;white-space:nowrap}
+  .stub-end{display:flex;align-items:center;gap:12px;justify-self:end}
+  .stub-end .flag{font-size:20px;line-height:1;width:26px;text-align:center;flex:none;filter:saturate(1.1)}
   .stub.planned{border-left-style:dashed;border-left-color:var(--gold);background:linear-gradient(90deg,rgba(245,179,10,.07),var(--concrete))}
   .stub.planned .tag.plan{color:var(--gold);border:1px solid var(--gold)}
   .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
@@ -257,7 +262,9 @@
   .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px;align-items:start}
   .about-layout{display:grid;grid-template-columns:1.55fr .85fr;gap:46px;align-items:start}
   .about-tagline{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,52px);line-height:1.04;text-transform:uppercase;color:var(--gold);margin-bottom:28px;max-width:22ch}
-  .about-photo{aspect-ratio:3/4;border:2px dashed #4a443d;background:#16130f;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.7;position:sticky;top:90px}
+  .about-photo{aspect-ratio:3/4;border:2px dashed #4a443d;background:#16130f;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;text-align:center;line-height:1.7;position:sticky;top:90px;overflow:hidden}
+  .about-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+  .about-photo:has(img){border-style:solid;border-color:var(--blood)}
   @media(max-width:760px){.about-layout{grid-template-columns:1fr;gap:30px}.about-photo{aspect-ratio:4/3;position:static}}
   .about-prose{max-width:760px}
   .about-prose p{color:#cfc8bf;font-size:16px;line-height:1.75;margin-bottom:18px}
@@ -287,22 +294,31 @@
   footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
 
   /* BUCKET LIST */
-  .bl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .bl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;align-items:start}
   .bl-col{display:flex;flex-direction:column;gap:12px}
-  .bl-item{display:flex;align-items:center;gap:14px;background:var(--concrete);border:1px solid var(--ash);border-left:6px solid var(--blood);padding:14px 16px;transition:transform .12s,background .12s}
+  .bl-item{display:flex;align-items:center;gap:12px;background:var(--concrete);border:1px solid var(--ash);border-left:6px solid var(--ash);padding:13px 14px;transition:transform .12s,background .12s}
   .bl-item:hover{transform:translateX(4px);background:#1d1814}
-  .bl-item .sk{width:24px;height:26px;flex:none;color:var(--gold)}
-  .bl-item .sk svg{width:100%;height:100%;display:block}
-  .bl-name{font-family:'Anton',sans-serif;font-size:19px;letter-spacing:.5px;text-transform:uppercase;line-height:1.02;flex:1}
-  .bl-status{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px dashed var(--ash);color:var(--muted);padding:4px 8px;white-space:nowrap}
-  .bl-item.caught .bl-rank{color:var(--gold)}
-  .bl-item.caught{border-left-color:var(--gold)}
-  .bl-item.caught.faded{opacity:.5;transform:scale(.97)}
-  .bl-item.caught.faded .bl-name{font-size:15px}
+  /* medal tiers: 1-10 gold, 11-20 silver, 21-30 bronze, 31+ plain */
+  .bl-item.gold   .bl-rank{color:#f5b30a}
+  .bl-item.silver .bl-rank{color:#c9ced6}
+  .bl-item.bronze .bl-rank{color:#c87b3f}
+  .bl-item.plain  .bl-rank{color:var(--muted)}
+  .bl-item.gold   {border-left-color:#f5b30a}
+  .bl-item.silver {border-left-color:#c9ced6}
+  .bl-item.bronze {border-left-color:#c87b3f}
+  .bl-dot{width:16px;height:16px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1}
+  .bl-item.gold   .bl-dot{background:radial-gradient(circle at 32% 30%,#ffe9a8,#f5b30a 60%,#8d6406)}
+  .bl-item.silver .bl-dot{background:radial-gradient(circle at 32% 30%,#ffffff,#c9ced6 60%,#6f757e)}
+  .bl-item.bronze .bl-dot{background:radial-gradient(circle at 32% 30%,#f0c39a,#c87b3f 60%,#6d3f1b)}
+  .bl-item.plain  .bl-dot{background:radial-gradient(circle at 32% 30%,#6a6058,#3a3430 60%,#241f1c)}
+  .bl-dot.target{background:none!important;color:var(--blood);font-size:15px;font-weight:700}
+  .bl-dot.check{color:#0c0a09;font-weight:700}
+  .bl-name{font-family:'Anton',sans-serif;font-size:17px;letter-spacing:.4px;text-transform:uppercase;line-height:1.02;flex:1}
+  .bl-status{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;border:1px dashed var(--ash);color:var(--muted);padding:4px 7px;white-space:nowrap}
+  .bl-item.caught.faded{opacity:.55}
   .bl-item.crosshairs{border-left-color:var(--blood)}
-  .bl-item.crosshairs .bl-rank{color:var(--blood)}
   .bl-item.crosshairs .bl-status{color:var(--blood);border-color:var(--blood)}
-  .bl-item.caught .bl-name{color:var(--gold);text-decoration:line-through;text-decoration-color:var(--blood)}
+  .bl-item.caught .bl-name{text-decoration:line-through;text-decoration-color:var(--blood)}
   .bl-item.caught .bl-status{border:none;background:var(--blood);color:var(--bone)}
 
   /* RESPONSIVE */
@@ -311,6 +327,7 @@
     .charts2,.charts3{grid-template-columns:1fr}
     .vol-grid{grid-template-columns:1fr}
     .bl-grid{grid-template-columns:1fr}
+    .stub-end{flex-direction:row}
     .photo-row{grid-template-columns:1fr;gap:30px}
     .fav-cols{grid-template-columns:1fr}
     .about-grid{grid-template-columns:1fr}
@@ -411,7 +428,7 @@
         <span class="kicker" data-i18n="kick_stats">Iron Maiden</span>
         <span class="no">666</span>
         <h2 data-i18n="stats_title">The Number of the Beast</h2>
-        <p data-i18n="stats_desc">My concert life in numbers.</p>
+        <p data-i18n="stats_desc">Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)</p>
       </div>
       <div class="stat-grid" id="statGrid"></div>
       <div class="records" id="records"></div>
@@ -543,7 +560,10 @@
         <p class="about-close" data-i18n="about_b5">So let's pump up the volume, turn the page, and explore the music that makes life unforgettable.</p>
           </div>
         </div>
-        <div class="about-photo" title="Photo placeholder"><span data-i18n="about_photo">Your photo<br>goes here</span></div>
+        <div class="about-photo" title="Photo">
+          <img src="data/photos/me.jpg" alt="" onerror="this.remove()">
+          <span data-i18n="about_photo">Your photo<br>goes here</span>
+        </div>
       </div>
     </div>
   </section>
@@ -681,7 +701,7 @@ const I18N = {
     nav_stats:"The Numbers", nav_shows:"The Journal", nav_hunt:"The Hunt", nav_top10:"Top 10", nav_byshows:"Shows by Year", nav_bybands:"Bands by Year", nav_map:"Map", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama Challenge", nav_about:"About", nav_bucket:"Bands to See", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
-    stats_title:"The Number of the Beast", stats_desc:"My concert life in numbers.",
+    stats_title:"The Number of the Beast", stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)",
     ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
     bucket_title:"All I Want", kick_bucket:"The Offspring",
     show_n:"show", shows_n:"shows", loc_unknown:"Location unknown",
@@ -693,7 +713,7 @@ const I18N = {
     hero_sub:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward. Because “when I've got the music, I've got a place to go.”",
     st_shows:"Total shows", st_bands:"Bands seen", st_venues:"Venues", st_cities:"Cities", st_countries:"Countries", st_years:"Years active",
     rec_band:"Most-seen band", rec_venue:"Most-visited venue", rec_city:"Most-visited city", rec_times:"times",
-    stats_desc:"All my concerts, all the bands I've seen, all the cities I've visited for shows, all the venues... my full concert journal!",
+    stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers :)",
     stats_topbands:"Top 10 bands", stats_topvenues:"Top 10 venues", stats_topcities:"Top 10 cities",
     map_title:"I Want to Conquer the World", map_desc:"Every pin is a memory - and every memory comes with its own soundtrack.",
     ledger_desc:"All the concerts, all the venues, all the bands - by date. Filter it however you please :)",
@@ -728,7 +748,7 @@ const I18N = {
     nav_stats:"Liczby", nav_shows:"Dziennik", nav_hunt:"Poszukiwany/Poszukiwana", nav_top10:"Top 10", nav_byshows:"Koncerty wg roku", nav_bybands:"Zespoły wg roku", nav_map:"Mapa", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama", nav_about:"O mnie", nav_bucket:"Na celowniku", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
-    stats_title:"The Number of the Beast", stats_desc:"Moje koncertowe życie w liczbach.",
+    stats_title:"The Number of the Beast", stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach :)",
     ledger_title:"Story of My Life", photos_title:"The Memory Remains", por_title:"I Wanna Riot",
     bucket_title:"All I Want", kick_bucket:"The Offspring",
     show_n:"koncert", shows_n:"koncerty", loc_unknown:"Miejsce nieznane",
@@ -740,7 +760,7 @@ const I18N = {
     hero_sub:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód. Bo „when I've got the music, I've got a place to go”.",
     st_shows:"Koncerty łącznie", st_bands:"Widziane zespoły", st_venues:"Miejsca", st_cities:"Miasta", st_countries:"Kraje", st_years:"Lata aktywności",
     rec_band:"Najczęściej widziany zespół", rec_venue:"Najczęściej odwiedzane miejsce", rec_city:"Najczęściej odwiedzane miasto", rec_times:"razy",
-    stats_desc:"Wszystkie moje koncerty, wszystkie zespoły, które widziałem, wszystkie miasta, które odwiedziłem dla koncertów, wszystkie miejsca... mój pełny dziennik koncertowy!",
+    stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach :)",
     stats_topbands:"Top 10 zespołów", stats_topvenues:"Top 10 miejsc", stats_topcities:"Top 10 miast",
     map_title:"I Want to Conquer the World", map_desc:"Każda pinezka to wspomnienie - a każde wspomnienie ma własną ścieżkę dźwiękową.",
     ledger_desc:"Wszystkie koncerty, wszystkie miejsca, wszystkie zespoły - według daty. Filtruj jak chcesz :)",
@@ -802,7 +822,7 @@ const I18N = {
     bucket_title:"All I Want",
     fav_title:"All Killer No Filler",
     quotes_title:"Scream It Back",
-    stats_desc:"Todos mis conciertos, todas las bandas que vi, todas las ciudades que visité para ver shows, todas las salas... ¡mi diario de conciertos completo!",
+    stats_desc:"La cantidad nunca fue el objetivo - pero cada concierto me deja con ganas de otro. Así que sigo: bandas nuevas, las que amo, las que ya vi diez veces. Me hace verdaderamente feliz ver en vivo a esta gente talentosa que decidió dedicar su vida a convertir su música en la banda sonora de la nuestra. Aun así - aquí está, toda mi vida de conciertos en números :)",
     stats_byyear:"Por año",
     tab_top10:"Top 10",
     yr_shows:"Shows por año",
@@ -1127,6 +1147,12 @@ const MONTHS={en:['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
               pl:['','Sty','Lut','Mar','Kwi','Maj','Cze','Lip','Sie','Wrz','Paź','Lis','Gru'],
               es:['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']};
 function moAbbr(m){ return (m&&MONTHS[lang]&&MONTHS[lang][m])||MONTHS.en[m]||''; }
+/* ISO country code -> flag emoji (works for any 2-letter code) */
+function flagOf(cc){
+  const c=String(cc||"").trim().toUpperCase();
+  if(!/^[A-Z]{2}$/.test(c)) return "";
+  return String.fromCodePoint(...[...c].map(ch=>0x1F1E6 + ch.charCodeAt(0) - 65));
+}
 function renderLedger(){
   const q=document.getElementById("search").value.toLowerCase();
   const fb=document.getElementById("fBand").value, fv=document.getElementById("fVenue").value, fy=document.getElementById("fYear").value;
@@ -1147,10 +1173,11 @@ function renderLedger(){
     const place=[c.venue,[c.city,c.country].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
     const tag = plan ? `<span class="tag plan">◎ ${t('planned_tag')}</span>`
                      : `<span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>`;
+    const fl=flagOf(c.country);
     return `<div class="stub${plan?' planned':''}">
        <span class="dt">${c.month?`<span class="mo">${moAbbr(c.month)}</span>`:''}<span class="yr">'${String(c.year).slice(2)}</span></span>
        <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${place}</span></span>
-       ${tag}
+       <span class="stub-end">${tag}<span class="flag" title="${c.country||''}">${fl||'·'}</span></span>
      </div>`;
   }).join("");
 }
@@ -1265,7 +1292,7 @@ function plannedInfo(name){                      // soonest PLANNED show for thi
 }
 function mm(m){ return m? String(m).padStart(2,'0')+'/' : ''; }
 function renderBucket(){
-  const list = BUCKET_LIST.slice(0,30);            // Top 30 hit-list (15 per column)
+  const list = BUCKET_LIST.slice(0,50);            // up to 50; shows however many you list
   const nowY = new Date().getFullYear();
   const ranked = list.map((name,i)=>{
     const got=bagged(name);
@@ -1273,13 +1300,7 @@ function renderBucket(){
     const plan = !got ? plannedInfo(name) : null;
     const state = got?'caught':(plan?'crosshairs':'hunting');
     return {name, rank:i+1, state, yr, plan, faded: got && yr!=null && yr < nowY-1};
-  });
-  const order={caught:0, crosshairs:1, hunting:2};
-  ranked.sort((a,b)=>
-    order[a.state]-order[b.state]
-    || (a.state==='caught' ? (b.yr||0)-(a.yr||0) : 0)                 // caught: newest first
-    || (a.state==='crosshairs' ? (a.plan.key)-(b.plan.key) : 0)      // crosshairs: soonest first
-    || a.rank-b.rank);
+  });   // NOTE: no re-sorting - every band keeps its own rank position
 
   const caughtN=ranked.filter(b=>b.state==='caught').length;
   const planN  =ranked.filter(b=>b.state==='crosshairs').length;
@@ -1288,22 +1309,25 @@ function renderBucket(){
     `${huntN} ${t('bl_hunting')}${planN?` · ${planN} ${t('bl_crosshairs')}`:''} · ${caughtN} ${t('bl_bagged')}`;
   document.getElementById("bucketMore").innerHTML = "";
 
+  const tier=r=> r<=10?'gold' : r<=20?'silver' : r<=30?'bronze' : 'plain';
   const itemHTML=b=>{
-    let cls='bl-item', mark=b.rank, tag=t('bucket_hunting');
-    if(b.state==='caught'){ cls+=' caught'+(b.faded?' faded':''); mark='★'; tag=`✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}`; }
-    else if(b.state==='crosshairs'){ cls+=' crosshairs'; mark='◎'; tag=`◎ ${t('bucket_crosshairs')} ${mm(b.plan.month)}${b.plan.year}`; }
+    let cls=`bl-item ${tier(b.rank)}`, tag=t('bucket_hunting');
+    if(b.state==='caught'){ cls+=' caught'+(b.faded?' faded':''); tag=`✓ ${t('bucket_caught')}${b.yr?` ${b.yr}`:''}`; }
+    else if(b.state==='crosshairs'){ cls+=' crosshairs'; tag=`◎ ${t('bucket_crosshairs')} ${mm(b.plan.month)}${b.plan.year}`; }
+    const dot = b.state==='crosshairs' ? `<span class="bl-dot target">◎</span>`
+              : b.state==='caught'     ? `<span class="bl-dot check">✓</span>`
+              :                          `<span class="bl-dot"></span>`;
     return `<div class="${cls}">
-      <span class="bl-rank">${mark}</span>
-      <span class="sk"><svg><use href="#i-skull"/></svg></span>
+      <span class="bl-rank">${b.rank}</span>
+      ${dot}
       <span class="bl-name">${b.name}</span>
       <span class="bl-status">${tag}</span>
     </div>`;
   };
-  const half=Math.ceil(ranked.length/2);           // left column fills first, then right
-  const left=ranked.slice(0,half).map(itemHTML).join("");
-  const right=ranked.slice(half).map(itemHTML).join("");
+  // fixed tiers per column: 1-10 gold | 11-20 silver | 21-30 bronze (31+ overflow into a 4th)
+  const cols=[]; for(let i=0;i<ranked.length;i+=10) cols.push(ranked.slice(i,i+10));
   document.getElementById("bucketGrid").innerHTML =
-    `<div class="bl-col">${left}</div><div class="bl-col">${right}</div>`;
+    cols.map(c=>`<div class="bl-col">${c.map(itemHTML).join("")}</div>`).join("");
 }
 
 /* ===================== FAVOURITES / QUOTES ===================== */
@@ -1326,11 +1350,13 @@ function renderFavorites(){
 const MARQUEE_KNOWN = new Set(["Tool","A Perfect Circle","Puscifer","Primus","The Offspring","Bad Religion","Rancid","NOFX","Social Distortion","Volbeat","Alter Bridge","Zakk Sabbath","Black Sabbath","Pixies","Rise Against","Dropkick Murphys","Flogging Molly","Pennywise","Descendents","Blink-182","Vampire Weekend","Alabama Shakes","Devo","Weird Al Yankovic","Lagwagon","Anti-Flag","Millencolin","The Bouncing Souls","Bad Brains","Jimmy Eat World","New Found Glory"]);
 function renderTicker(){
   const all=[...new Set(CONCERTS.flatMap(c=>c.bands))];
-  let names=all.filter(b=>MARQUEE_KNOWN.has(b));
-  if(names.length<12){                              // pad with most-seen bands
-    const bySeen=sortDesc(countBands(CONCERTS)).map(e=>e[0]);
-    for(const b of bySeen){ if(!names.includes(b)){ names.push(b); if(names.length>=16) break; } }
-  }
+  const seen=countBands(CONCERTS);
+  // weight: marquee names heaviest, then how often I've seen them, plus a random kick
+  const weight=b=> (MARQUEE_KNOWN.has(b)?3:1) * (1+(seen[b]||0)*0.35) * (0.55+Math.random());
+  const pool=all.map(b=>({b, w:weight(b)})).sort((a,c)=>c.w-a.w);
+  // take a healthy slice, then shuffle it so the running order differs every visit
+  let names=pool.slice(0, Math.min(26, Math.max(14, Math.ceil(all.length*0.55)))).map(x=>x.b);
+  for(let i=names.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [names[i],names[j]]=[names[j],names[i]]; }
   const piece=names.map(n=>`<span>${n}</span><span class="star">✶</span>`).join("");
   const run=document.getElementById("ticker");
   run.innerHTML=piece+piece;
