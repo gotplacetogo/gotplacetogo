@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#0c0a09">
 <title>Got Place To Go - a live-music field journal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,7 +156,7 @@
   .status-pill{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 9px;border:1px dashed var(--ash);color:var(--muted);white-space:nowrap}
   .status-pill.on{background:var(--blood);border:1px solid var(--blood);color:var(--bone)}
 
-  .logo{display:inline-block;width:30px;height:34px;margin-right:11px;vertical-align:middle;flex:none;border:1px dashed #4a443d;border-radius:5px;background:transparent}
+  .logo{display:block;width:30px;height:34px;margin-right:11px;flex:none;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
   .brand{display:inline-flex;align-items:center;white-space:nowrap}
 
   /* PHOTO ROW (3 up) */
@@ -370,7 +375,7 @@
 
 <nav>
   <div class="wrap nav-inner">
-    <a href="#top" class="brand"><span class="logo" title="Logo placeholder"></span>GOT PLACE<b>·</b>TO GO</a>
+    <a href="#top" class="brand"><img class="logo" src="logo-red.png" alt="" width="30" height="34">GOT PLACE<b>·</b>TO GO</a>
     <div style="display:flex;align-items:center;gap:18px">
       <div class="nav-links" id="navlinks">
         <div class="nav-item has-drop">
