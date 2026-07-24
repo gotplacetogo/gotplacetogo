@@ -614,7 +614,7 @@
    status:"Ready to Post" are counted.
    `bands` may be an array OR a delimited string ("A; B; C").
    ============================================================ */
-const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.json", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", PLAYLIST_URL:"data/playlists.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
+const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.txt", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", PLAYLIST_URL:"data/playlists.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
 
 let PLANNED = [];   // upcoming shows (Status = Planned) - excluded from all stats
 let CONCERTS = [
@@ -1218,14 +1218,32 @@ function renderLedger(){
 /* ===================== PHOTOS / 3-UP CAROUSEL ===================== */
 let photoStart=0, photoTimer=null, PHOTO_ORDER=[];
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-/* Photo paths in data/photos.json are written relative to the data/ folder
+/* Photos: one per line ->  filename.jpg | Caption | Location Year
+   (JSON array still accepted for backward compatibility) */
+function parsePhotoText(txt){
+  const t=String(txt||"").trim();
+  if(!t) return [];
+  if(t.startsWith('[')){ try{ return JSON.parse(t); }catch(e){ return []; } }
+  return t.split(/\r?\n/).map(l=>l.trim())
+    .filter(l=>l && !l.startsWith('#'))
+    .map(line=>{
+      const p=line.split('|');
+      const img=(p[0]||'').trim();
+      if(!img) return null;
+      return {img, caption:(p[1]||'').trim(), meta:(p[2]||'').trim()};
+    })
+    .filter(Boolean);
+}
+/* Photo paths in data/photos.txt are written relative to the data/ folder
    (e.g. "photos/gig.jpg"). Resolve them against data/ and encode spaces/&. */
 function photoSrc(p){
   let s=String(p||"").trim();
   if(!s) return "";
   if(/^(https?:)?\/\//i.test(s)) return s;          // full URL - leave alone
-  if(!s.startsWith("data/")) s = "data/" + s.replace(/^\.?\//,"");
-  return encodeURI(s);
+  s=s.replace(/^\.?\//,"");
+  if(s.startsWith("data/")) return encodeURI(s);     // already full path
+  if(!s.startsWith("photos/")) s="photos/"+s;        // bare filename -> photos/
+  return encodeURI("data/"+s);
 }
 function frameHTML(p){
   if(!p) return "";
@@ -1520,7 +1538,7 @@ async function loadData(){
     catch(e){ console.warn("Concert feed unavailable, using sample data.",e); }
   }
   if(CONFIG.PHOTOS_URL){
-    try{ const r=await fetch(CONFIG.PHOTOS_URL,{cache:"no-store"}); if(r.ok){ const d=await r.json(); if(Array.isArray(d)&&d.length) PHOTOS=d; } }
+    try{ const r=await fetch(CONFIG.PHOTOS_URL,{cache:"no-store"}); if(r.ok){ const d=parsePhotoText(await r.text()); if(d.length) PHOTOS=d; } }
     catch(e){ console.warn("Photo feed unavailable, using placeholders.",e); }
   }
   if(CONFIG.FAV_URL){
