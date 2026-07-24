@@ -229,12 +229,12 @@
   .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
 
   /* PHOTOS / THE WALL */
-  .photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;justify-items:center;align-items:start;width:min(1640px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
-  .frame{background:#e9e4da;padding:18px 18px 0;box-shadow:8px 11px 0 rgba(0,0,0,.5);transform:rotate(-1.2deg);max-width:760px;width:100%}
+  .photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;justify-items:center;align-items:start;width:min(1500px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
+  .frame{background:#e9e4da;padding:18px 18px 0;box-shadow:8px 11px 0 rgba(0,0,0,.5);transform:rotate(-1.2deg);width:auto;max-width:100%}
   .frame:nth-child(2){transform:rotate(1deg)}
   .frame:nth-child(3){transform:rotate(-.6deg)}
   .carousel{position:relative;display:grid;grid-template-columns:1fr;justify-items:center}
-  .frame .pic{aspect-ratio:4/3;background:
+  .frame .pic{aspect-ratio:4/3;max-width:430px;max-height:430px;background:
       repeating-linear-gradient(45deg,#2a2521 0 14px,#221d19 14px 28px);
       display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
   .frame .pic .ph-band{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,44px);color:rgba(241,179,10,.22);text-transform:uppercase;text-align:center;padding:0 16px;line-height:.95}
@@ -243,7 +243,7 @@
   .frame .cap-main{font-family:'Space Mono',monospace;font-weight:700;font-size:12.5px;line-height:1.35;color:#1a1613;letter-spacing:-.1px}
   .frame .cap-meta{font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.3;color:#6b625a;letter-spacing:.06em;text-transform:uppercase}
   @media(max-width:1100px){.photo-row{grid-template-columns:repeat(2,1fr)}.photo-row .frame:nth-child(3){display:none}}
-  .carousel-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:26px}
+  .carousel-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 22px}
   .carousel-ctrl button{background:var(--concrete);border:1px solid var(--ash);color:var(--bone);font-family:'Space Mono',monospace;font-size:14px;padding:8px 16px;cursor:pointer}
   .carousel-ctrl button:hover{border-color:var(--gold);color:var(--gold)}
   .dots{display:flex;gap:7px}
@@ -501,15 +501,14 @@
         <span class="kicker" data-i18n="kick_photos">Metallica</span>
         <span class="no">03</span>
         <h2 data-i18n="photos_title">The Memory Remains</h2>
-        <p data-i18n="photos_desc">Shots from the pit and bands I've met. Pulled at random from my photo folder, reshuffled every visit.</p>
+        <p data-i18n="photos_desc">Faces from the pit, and the ones I somehow talked my way into meeting. Sweat, blur, bad lighting - every one of them worth it. Shuffled fresh every visit.</p>
       </div>
-      <div class="photo-row" id="photoRow"></div>
       <div class="carousel-ctrl">
         <button id="prevPhoto" aria-label="Previous photos">‹ PREV</button>
         <div class="dots" id="dots"></div>
         <button id="nextPhoto" aria-label="Next photos">NEXT ›</button>
       </div>
-      <p class="ph-note" data-i18n="photos_note">Placeholder frames - drop real photos in the folder and they appear here automatically.</p>
+      <div class="photo-row" id="photoRow"></div>
     </div>
   </section>
 
@@ -747,8 +746,7 @@ const I18N = {
     map_title:"I Want to Conquer the World", map_desc:"Every pin is a memory - and every memory comes with its own soundtrack.",
     ledger_desc:"All the concerts, all the venues, all the bands - by date. Filter it however you please :)",
     ledger_search:"Search band, venue, city...", f_allband:"All bands", f_allvenue:"All venues", f_allyear:"All years",
-    photos_desc:"All the cool pictures from the crazy shows - with bands, with fans, with the stage, with the coolest people I've met and had the pleasure to share the pit with :)",
-    photos_note:"Placeholder frames - drop real photos in the folder and they appear here automatically.",
+    photos_desc:"Faces from the pit, and the ones I somehow talked my way into meeting. Sweat, blur, bad lighting - every one of them worth it. Shuffled fresh every visit.",
     por_title:"I Wanna Riot",
     challenge_intro:"These two compilations are where my punk education began. Somewhere in those tracklists I got the idea to see every band on them live - and started ticking boxes. Some I figured I'd never catch, since bands rarely play those songs live - but a few came as cool surprises. Hope someday I can say I saw all these bands live... and maybe even that I heard those exact songs live (impossible :P).",
     por_h:"Punk-O-Rama", por_desc:"Catch a band from every Epitaph Punk-O-Rama volume (1–10) live. (Sample line-ups - swap in the real tracklists.)",
@@ -795,8 +793,7 @@ const I18N = {
     map_title:"I Want to Conquer the World", map_desc:"Każda pinezka to wspomnienie - a każde wspomnienie ma własną ścieżkę dźwiękową.",
     ledger_desc:"Wszystkie koncerty, wszystkie miejsca, wszystkie zespoły - według daty. Filtruj jak chcesz :)",
     ledger_search:"Szukaj zespołu, miejsca, miasta...", f_allband:"Wszystkie zespoły", f_allvenue:"Wszystkie miejsca", f_allyear:"Wszystkie lata",
-    photos_desc:"Wszystkie świetne zdjęcia z szalonych koncertów - z zespołami, z fanami, ze sceną, z najfajniejszymi ludźmi, których poznałem i z którymi dzieliłem pit :)",
-    photos_note:"Ramki zastępcze - wrzuć prawdziwe zdjęcia do folderu, a pojawią się tu automatycznie.",
+    photos_desc:"Twarze z pitu i ci, do których jakimś cudem udało mi się dopchać. Pot, poruszone kadry, fatalne światło - i każde z nich było tego warte. Za każdym razem inna kolejność.",
     por_title:"I Wanna Riot",
     challenge_intro:"Te dwie składanki to początek mojej punkowej edukacji. Gdzieś w tych tracklistach wpadłem na pomysł, żeby zobaczyć na żywo każdy zespół z nich - i zacząłem odhaczać kolejne. Niektórych pewnie nigdy nie zobaczę, bo zespoły rzadko grają te kawałki na żywo - ale kilka było miłą niespodzianką. Mam nadzieję, że kiedyś powiem, że widziałem wszystkie te zespoły na żywo... a może nawet, że słyszałem dokładnie te piosenki na żywo (niemożliwe :P).",
     por_h:"Punk-O-Rama", por_desc:"Zobaczyć na żywo zespół z każdego tomu Epitaph Punk-O-Rama (1–10). (Przykładowe składy - wstaw prawdziwe listy.)",
@@ -879,8 +876,7 @@ const I18N = {
     f_allband:"Todas las bandas",
     f_allvenue:"Todas las salas",
     f_allyear:"Todos los años",
-    photos_desc:"Todas las fotos geniales de los shows alocados - con bandas, con fans, con el escenario, con la gente más cool que conocí y con quien compartí el pit :)",
-    photos_note:"Marcos de muestra - pon fotos reales en la carpeta y aparecen aquí solas.",
+    photos_desc:"Caras del pit y los que de algún modo conseguí conocer. Sudor, fotos movidas, mala luz - y cada una valió la pena. Se barajan de nuevo en cada visita.",
     challenge_intro:"Estas dos recopilaciones son donde empezó mi educación punk. En algún punto de esas listas se me ocurrió ver en vivo a todas las bandas - y empecé a tachar casillas. Algunas pensé que nunca las atraparía, porque las bandas rara vez tocan esas canciones en vivo - pero algunas fueron sorpresas geniales. Espero que algún día pueda decir que vi a todas estas bandas en vivo... y quizá incluso que escuché esas mismas canciones en vivo (imposible :P).",
     por_h:"Punk-O-Rama",
     por_desc:"Atrapa en vivo a una banda de cada volumen de Punk-O-Rama (1–10).",
@@ -1264,12 +1260,31 @@ function frameHTML(p){
   return `<div class="frame"><div class="pic">${inner}</div>${cap}</div>`;
 }
 function fitFrames(){
-  // size each frame to its photo's real orientation (portrait/landscape/square)
-  document.querySelectorAll('#photoRow .frame .pic img').forEach(img=>{
-    const set=()=>{ if(img.naturalWidth&&img.naturalHeight) img.parentElement.style.aspectRatio = img.naturalWidth+'/'+img.naturalHeight; };
-    if(img.complete) set(); else img.addEventListener('load',set,{once:true});
+  const row=document.getElementById('photoRow');
+  if(!row) return;
+  // longest side budget: same for portrait and landscape, so they look consistent
+  const per=perPage(), gap=30, pad=36;                    // frame padding L+R
+  const avail=Math.floor((row.clientWidth - gap*(per-1))/per) - pad;
+  const MAX_SIDE=Math.max(200, Math.min(430, avail));
+  row.querySelectorAll('.frame').forEach(fr=>{
+    const img=fr.querySelector('img'), pic=fr.querySelector('.pic');
+    if(!pic) return;
+    if(!img){ pic.style.width=MAX_SIDE+'px'; pic.style.height=Math.round(MAX_SIDE*0.75)+'px'; fr.style.width=(MAX_SIDE+pad)+'px'; return; }
+    const apply=()=>{
+      const nw=img.naturalWidth, nh=img.naturalHeight;
+      if(!nw||!nh) return;
+      const ar=nw/nh;
+      let w,h;
+      if(ar>=1){ w=MAX_SIDE;            h=Math.round(MAX_SIDE/ar); }   // landscape
+      else     { h=MAX_SIDE; w=Math.round(MAX_SIDE*ar); }              // portrait
+      pic.style.width=w+'px'; pic.style.height=h+'px'; pic.style.aspectRatio='auto';
+      fr.style.width=(w+pad)+'px';
+    };
+    if(img.complete) apply(); else img.addEventListener('load',apply,{once:true});
   });
 }
+let photoResizeT=null;
+window.addEventListener('resize',()=>{ clearTimeout(photoResizeT); photoResizeT=setTimeout(fitFrames,150); });
 function perPage(){ return window.matchMedia('(max-width:1100px)').matches ? 2 : 3; }
 function renderPhotos(){
   PHOTO_ORDER = shuffle(PHOTOS);           // fresh random order every visit
