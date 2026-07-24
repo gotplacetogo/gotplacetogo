@@ -1,23 +1,23 @@
 # One photo per line:   filename.jpg | Caption | Location Year
 # Files live in data/photos/  -  just write the filename, no folder needed.
-# Blank captions are fine. Lines starting with # are ignored.
+# A line starting with # is IGNORED - use that to hide a photo without deleting it.
 
 2017_SOAD_Krakow.jpg | System of a Down - my crowd surfing | Kraków, PL '17
-2018_Nita Strauss & Angel Vivaldi & Jacky Vincent The Guitar Collective 2018.jpg | Nita Strauss, Angel Vivaldi & Jacky Vincent - The Guitar Collective | Denver, CO '18
+2018_Nita Strauss & Angel Vivaldi & Jacky Vincent The Guitar Collective 2018.jpg | Nita Strauss, Angel Vivaldi & Jacky Vincent | Denver, CO '18
 20150624_012413.jpg | Jacoby Shaddix (Papa Roach) | Helsinki, Finland '15
-20110805604.jpg | Robert Friedrich 'Litza' (Luxtorpeda, Acid Drinkers, Kazik Na Żywo) | Kostrzyn n/Odrą, PL '11
+20110805604.jpg | Robert Friedrich 'Litza' (Luxtorpeda, Acid Drinkers) | Kostrzyn n/Odrą, PL '11
 20150928_193356.jpg | Rou Reynolds & Chris Batten (Enter Shikari) | Warsaw, PL '15
 20171028_201716.jpg | Robert Szymański (Sexbomba) | Kraków, PL '17
-20171023_224110.jpg | Test | Kraków, PL '17
-20190919_235229.jpg | Test | Kraków, PL '19
 
-# --- uploaded but not captioned yet: add a caption after the "|" ---
-092-inekafe-zabili-mi-zolwia-64.jpg |  | 
-1534332_759099367434862_1388586623_n.jpg |  | 
-20140618_221359_re.jpg |  | 
-20150624_012433.jpg |  | 
-30072010249.jpg |  | 
-AIMAG0931.jpg |  | 
-AIMAG0939.jpg |  | 
-IMAG0945.jpg |  | 
-IMG_99999.jpg |  | 
+# --- hidden for now: delete the "#" to show one, and add a caption ---
+# 20171023_224110.jpg |  | Kraków, PL '17
+# 20190919_235229.jpg |  | Kraków, PL '19
+# 092-inekafe-zabili-mi-zolwia-64.jpg |  | 
+# 1534332_759099367434862_1388586623_n.jpg |  | 
+# 20140618_221359_re.jpg |  | 
+# 20150624_012433.jpg |  | 
+# 30072010249.jpg |  | 
+# AIMAG0931.jpg |  | 
+# AIMAG0939.jpg |  | 
+# IMAG0945.jpg |  | 
+# IMG_99999.jpg |  | 
