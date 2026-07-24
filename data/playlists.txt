@@ -1,3 +1,4 @@
 # One playlist per line:   Label | Spotify playlist URL (or just the ID)
 # Up to 6. With one line the tabs are hidden; add a second and tabs appear automatically.
 Purpose of Life | https://open.spotify.com/playlist/3IFguYQvRheuWls4qNgB60
+All Killer No Filler | https://open.spotify.com/playlist/3KQlhseRD5VhTpCKK6oJiI?si=13943786fbf14c10
