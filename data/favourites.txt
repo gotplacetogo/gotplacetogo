@@ -3,8 +3,11 @@
 # Line 2: Artist | Title | why this matters (the 'why' is optional)
 # Blank lines are ignored. No commas or quotes needed.
 
-2026 song
-Black Label Society | Name in Blood
+2026 album
+Black Label Society | Engines of Demolition
+
+2026 album
+Social Distortion | Born To Kill | Good old Social Distortion... back in top form with a beautiful punk rock 'n' roll vibe! Pure honey for my ears!
 
 2026 song
 Black Label Society | Name in Blood
