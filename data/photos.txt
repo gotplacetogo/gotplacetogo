@@ -8,8 +8,8 @@
 20110805604.jpg | Robert Friedrich 'Litza' (Luxtorpeda, Acid Drinkers, Kazik Na Żywo) | Kostrzyn n/Odrą, PL '11
 20150928_193356.jpg | Rou Reynolds & Chris Batten (Enter Shikari) | Warsaw, PL '15
 20171028_201716.jpg | Robert Szymański (Sexbomba) | Kraków, PL '17
-20171023_224110.jpg |  | Kraków, PL '17
-20190919_235229.jpg |  | Kraków, PL '19
+20171023_224110.jpg | Test | Kraków, PL '17
+20190919_235229.jpg | Test | Kraków, PL '19
 
 # --- uploaded but not captioned yet: add a caption after the "|" ---
 092-inekafe-zabili-mi-zolwia-64.jpg |  | 
