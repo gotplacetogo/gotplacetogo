@@ -113,6 +113,7 @@
   .yr-toggle button.on{background:var(--gold);color:var(--ink);font-weight:700}
   .bar-row{display:flex;flex-direction:column;gap:15px}
   .bar2 .bn2{font-weight:700;font-size:13px;line-height:1.18;margin-bottom:6px}
+  .bar2 .bn-flag .flag-img{width:19px;height:auto;margin-right:8px;vertical-align:-3px;display:inline-block;border:1px solid rgba(255,255,255,.16);box-shadow:0 1px 2px rgba(0,0,0,.5)}
   .bar2 .row2{display:grid;grid-template-columns:1fr 28px;align-items:center;gap:10px}
   .bar2 .track2{height:12px;background:#241e1a;position:relative}
   .bar2 .fill2{height:100%;display:block}
@@ -305,6 +306,7 @@
   .pl-tabs{margin-bottom:18px}
   .pl-frame{border:2px dashed #4a443d;padding:10px;background:#16130f}
   .pl-frame iframe{display:block;width:100%;border:0;border-radius:12px}
+  .pl-note{font-family:'Space Mono',monospace;font-size:13.5px;line-height:1.6;color:var(--muted);margin:2px 4px 14px;padding-left:11px;border-left:2px solid var(--blood)}
   .pl-empty{padding:40px 16px;text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:13px}
 
   /* BUCKET LIST */
@@ -1059,9 +1061,14 @@ function renderStats(){
      <div><b>${Object.keys(bandC).length}</b><small>${t("st_bands")}</small></div>
      <div><b>${Object.keys(venC).length}</b><small>${t("st_venues")}</small></div>`;
 
+  const venueCC={}, cityCC={};   // name -> country code for flags
+  CONCERTS.forEach(r=>{
+    if(r.venue && r.country && !venueCC[r.venue]) venueCC[r.venue]=r.country;
+    if(r.city  && r.country && !cityCC[r.city])   cityCC[r.city]=r.country;
+  });
   renderBars("topBands", sortDesc(bandC).slice(0,10));
-  renderBars("topVenues", sortDesc(venC).slice(0,10));
-  renderBars("topCities", sortDesc(cityC).slice(0,10));
+  renderBars("topVenues", sortDesc(venC).slice(0,10), null, venueCC);
+  renderBars("topCities", sortDesc(cityC).slice(0,10), null, cityCC);
   renderStatTab();
 }
 let statTab='top10';
@@ -1105,15 +1112,16 @@ function colorYear(r){ // high count -> gold, low -> orange/red
   const hue=Math.round(10+r*35), light=48+Math.round(r*8);
   return `hsl(${hue},92%,${light}%)`;
 }
-function renderBars(id, entries, mode){
+function renderBars(id, entries, mode, flags){
   const el=document.getElementById(id);
   if(!entries.length){ el.innerHTML=""; return; }
   const max=Math.max(...entries.map(e=>e[1]));
   el.innerHTML = entries.map(([name,ct])=>{
     const r=ct/max;
     const col = mode==='year' ? colorYear(r) : 'var(--gold)';   // top-10 = unified gold
+    const fl = (flags && flags[name]) ? flagOf(flags[name]) : '';
     return `<div class="bar2">
-      <div class="bn2">${name}</div>
+      <div class="bn2">${fl?`<span class="bn-flag">${fl}</span>`:''}${name}</div>
       <div class="row2"><span class="track2"><span class="fill2" style="width:${Math.max(7,r*100)}%;background:${col}"></span></span><span class="ct2">${ct}</span></div>
     </div>`;
   }).join("");
@@ -1460,7 +1468,7 @@ function renderFavorites(){
 /* ===================== PLAYLISTS (Sound System) ===================== */
 let PLAYLISTS = [];      // [{label, id}]
 let plTab = 0;
-/* data/playlists.txt - one per line:  Label | Spotify playlist URL or ID */
+/* data/playlists.txt - one per line:  Label | Spotify URL or ID | why I made it (optional) */
 function parsePlaylists(txt){
   const t=String(txt||"").trim();
   if(!t) return [];
@@ -1469,9 +1477,10 @@ function parsePlaylists(txt){
     .map(line=>{
       const p=line.split('|');
       const label=(p[0]||'').trim();
-      const raw=(p.slice(1).join('|')||'').trim();
+      const raw=(p[1]||'').trim();
+      const note=(p.slice(2).join('|')||'').trim();
       const m=raw.match(/playlist[/:]([A-Za-z0-9]+)/) || raw.match(/^([A-Za-z0-9]{15,})$/);
-      return m ? {label: label||'Playlist', id:m[1]} : null;
+      return m ? {label: label||'Playlist', id:m[1], note} : null;
     })
     .filter(Boolean)
     .slice(0,6);          // sensible cap
@@ -1489,8 +1498,9 @@ function renderPlaylists(){
     : '';
   tabsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{plTab=+b.dataset.pl;renderPlaylists();}));
   const p=PLAYLISTS[Math.min(plTab,PLAYLISTS.length-1)];
+  const note = p.note ? `<p class="pl-note">${p.note}</p>` : "";
   // only the active playlist is embedded, so extra tabs cost nothing until opened
-  frameEl.innerHTML=`<iframe src="https://open.spotify.com/embed/playlist/${p.id}?utm_source=generator" height="352" loading="lazy" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="${p.label}"></iframe>`;
+  frameEl.innerHTML=note+`<iframe src="https://open.spotify.com/embed/playlist/${p.id}?utm_source=generator" height="352" loading="lazy" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="${p.label}"></iframe>`;
 }
 const MARQUEE_KNOWN = new Set(["Tool","A Perfect Circle","Puscifer","Primus","The Offspring","Bad Religion","Rancid","NOFX","Social Distortion","Volbeat","Alter Bridge","Zakk Sabbath","Black Sabbath","Pixies","Rise Against","Dropkick Murphys","Flogging Molly","Pennywise","Descendents","Blink-182","Vampire Weekend","Alabama Shakes","Devo","Weird Al Yankovic","Lagwagon","Anti-Flag","Millencolin","The Bouncing Souls","Bad Brains","Jimmy Eat World","New Found Glory"]);
 function renderTicker(){
