@@ -229,12 +229,12 @@
   .empty{color:var(--muted);font-family:'Space Mono',monospace;padding:30px 0;text-align:center}
 
   /* PHOTOS / THE WALL */
-  .photo-row{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;justify-items:center;align-items:start;width:min(1500px,calc(100vw - 48px));margin-left:50%;transform:translateX(-50%)}
-  .frame{background:#e9e4da;padding:18px 18px 0;box-shadow:8px 11px 0 rgba(0,0,0,.5);transform:rotate(-1.2deg);width:auto;max-width:100%}
+  .photo-row{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-start;gap:26px;width:min(1720px,calc(100vw - 40px));margin-left:50%;transform:translateX(-50%)}
+  .frame{background:#e9e4da;padding:18px 18px 0;box-shadow:8px 11px 0 rgba(0,0,0,.5);transform:rotate(-1.2deg);flex:none}
   .frame:nth-child(2){transform:rotate(1deg)}
   .frame:nth-child(3){transform:rotate(-.6deg)}
   .carousel{position:relative;display:grid;grid-template-columns:1fr;justify-items:center}
-  .frame .pic{aspect-ratio:4/3;max-width:430px;max-height:430px;background:
+  .frame .pic{aspect-ratio:4/3;background:
       repeating-linear-gradient(45deg,#2a2521 0 14px,#221d19 14px 28px);
       display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
   .frame .pic .ph-band{font-family:'Anton',sans-serif;font-size:clamp(26px,5vw,44px);color:rgba(241,179,10,.22);text-transform:uppercase;text-align:center;padding:0 16px;line-height:.95}
@@ -242,7 +242,7 @@
   .frame .cap{padding:12px 6px 15px;text-align:center;display:flex;flex-direction:column;gap:3px}
   .frame .cap-main{font-family:'Space Mono',monospace;font-weight:700;font-size:12.5px;line-height:1.35;color:#1a1613;letter-spacing:-.1px}
   .frame .cap-meta{font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.3;color:#6b625a;letter-spacing:.06em;text-transform:uppercase}
-  @media(max-width:1100px){.photo-row{grid-template-columns:repeat(2,1fr)}.photo-row .frame:nth-child(3){display:none}}
+  @media(max-width:1100px){.photo-row{flex-wrap:wrap}}
   .carousel-ctrl{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 22px}
   .carousel-ctrl button{background:var(--concrete);border:1px solid var(--ash);color:var(--bone);font-family:'Space Mono',monospace;font-size:14px;padding:8px 16px;cursor:pointer}
   .carousel-ctrl button:hover{border-color:var(--gold);color:var(--gold)}
@@ -342,7 +342,7 @@
     .vol-grid{grid-template-columns:1fr}
     .bl-grid{grid-template-columns:1fr;width:auto;margin-left:0;transform:none}
     .stub-end{flex-direction:row}
-    .photo-row{grid-template-columns:1fr;gap:30px}
+    .photo-row{flex-direction:column;align-items:center;gap:30px}
     .fav-cols{grid-template-columns:1fr}
     .about-grid{grid-template-columns:1fr}
     .nav-links{display:none;position:absolute;top:62px;left:0;right:0;flex-direction:column;background:var(--ink);padding:18px 24px;border-bottom:2px solid var(--blood);gap:12px}
@@ -1262,26 +1262,38 @@ function frameHTML(p){
 function fitFrames(){
   const row=document.getElementById('photoRow');
   if(!row) return;
-  // longest side budget: same for portrait and landscape, so they look consistent
-  const per=perPage(), gap=30, pad=36;                    // frame padding L+R
-  const avail=Math.floor((row.clientWidth - gap*(per-1))/per) - pad;
-  const MAX_SIDE=Math.max(200, Math.min(430, avail));
-  row.querySelectorAll('.frame').forEach(fr=>{
-    const img=fr.querySelector('img'), pic=fr.querySelector('.pic');
-    if(!pic) return;
-    if(!img){ pic.style.width=MAX_SIDE+'px'; pic.style.height=Math.round(MAX_SIDE*0.75)+'px'; fr.style.width=(MAX_SIDE+pad)+'px'; return; }
-    const apply=()=>{
-      const nw=img.naturalWidth, nh=img.naturalHeight;
-      if(!nw||!nh) return;
-      const ar=nw/nh;
-      let w,h;
-      if(ar>=1){ w=MAX_SIDE;            h=Math.round(MAX_SIDE/ar); }   // landscape
-      else     { h=MAX_SIDE; w=Math.round(MAX_SIDE*ar); }              // portrait
-      pic.style.width=w+'px'; pic.style.height=h+'px'; pic.style.aspectRatio='auto';
-      fr.style.width=(w+pad)+'px';
-    };
-    if(img.complete) apply(); else img.addEventListener('load',apply,{once:true});
-  });
+  const frames=[...row.querySelectorAll('.frame')];
+  if(!frames.length) return;
+  const stacked = window.matchMedia('(max-width:760px)').matches;
+  const gap=26, padX=36;                                  // frame L+R padding
+  const per=frames.length;
+  const MAXH = stacked ? 460 : 560;                       // never taller than this
+  // aspect ratio per photo (default 4:3 until the image reports real dimensions)
+  const ars=frames.map(fr=>{const img=fr.querySelector('img'); return (img&&img.naturalWidth&&img.naturalHeight)?img.naturalWidth/img.naturalHeight:4/3;});
+
+  const sizeOne=(fr,h,ar)=>{
+    const w=Math.round(h*ar), hh=Math.round(h);
+    const pic=fr.querySelector('.pic');
+    pic.style.width=w+'px'; pic.style.height=hh+'px';
+    pic.style.aspectRatio='auto'; pic.style.maxWidth='none'; pic.style.maxHeight='none';
+    fr.style.width=(w+padX)+'px';
+  };
+
+  if(stacked){                                            // one per row, each capped
+    frames.forEach((fr,i)=>{
+      const colW=Math.min(row.clientWidth, 520)-padX;
+      let h=colW/ars[i]; h=Math.min(h,MAXH);
+      sizeOne(fr,h,ars[i]);
+    });
+  } else {                                                // justified: shared height fills the width
+    const sumAR=ars.reduce((a,b)=>a+b,0);
+    const avail=row.clientWidth - per*padX - (per-1)*gap;
+    let h=avail/sumAR;
+    h=Math.min(h,MAXH); h=Math.max(h,180);
+    frames.forEach((fr,i)=>sizeOne(fr,h,ars[i]));
+  }
+  // when a real image finishes loading, recompute with its true aspect ratio
+  frames.forEach(fr=>{const img=fr.querySelector('img'); if(img && !img.complete) img.addEventListener('load',fitFrames,{once:true});});
 }
 let photoResizeT=null;
 window.addEventListener('resize',()=>{ clearTimeout(photoResizeT); photoResizeT=setTimeout(fitFrames,150); });
