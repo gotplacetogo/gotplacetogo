@@ -10,10 +10,10 @@
 20171028_201716.jpg | Robert Szymański (Sexbomba) | Kraków [Poland] '17
 IMG_5297.jpg | Greg Graffin (Bad Religion) | Las Vegas, NV [USA] '23
 IMG_5333.jpg | Greg Graffin (Bad Religion) | Las Vegas, NV [USA] '23
-IMG_6520.jpg | Nick Oliveri (Kyuss, Queens of the Stone Age, The Dwarves) | Atlanta, GA [USA] '23
-IMG_6897.jpg | Olga Svetlanas (Svetlanas) | Las Vegas, NV [USA] '23
 20171023_224110.jpg | Thomas Zwijsen & Ben Woods | Kraków, PL '16
 20190919_235229.jpg | Thomas Zwijsen & Wiki Krawczyk | Kraków, PL '19
+IMG_6520.jpg | Nick Oliveri (Kyuss, Queens of the Stone Age, The Dwarves) | Atlanta, GA [USA] '23
+IMG_6897.jpg | Olga Svetlanas (Svetlanas) | Las Vegas, NV [USA] '23
 
 # --- hidden for now: delete the "#" to show one, and add a caption ---
 # 092-inekafe-zabili-mi-zolwia-64.jpg |  | 
