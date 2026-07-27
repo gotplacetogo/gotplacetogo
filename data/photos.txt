@@ -8,10 +8,14 @@
 20110805604.jpg | Robert Friedrich 'Litza' (Luxtorpeda, Acid Drinkers) | Kostrzyn n/Odrą [Poland] '11
 20150928_193356.jpg | Rou Reynolds & Chris Batten (Enter Shikari) | Warsaw [Poland] '15
 20171028_201716.jpg | Robert Szymański (Sexbomba) | Kraków [Poland] '17
+IMG_5297.jpg | Greg Graffin (Bad Religion) | Las Vegas, NV [USA] '23
+IMG_5333.jpg | Greg Graffin (Bad Religion) | Las Vegas, NV [USA] '23
+IMG_6520.jpg | Nick Oliveri (Kyuss, Queens of the Stone Age, The Dwarves) | Atlanta, GA [USA] '23
+IMG_6897.jpg | Olga Svetlanas (Svetlanas) | Las Vegas, NV [USA] '23
+20171023_224110.jpg | Thomas Zwijsen & Ben Woods | Kraków, PL '16
+20190919_235229.jpg | Thomas Zwijsen & Wiki Krawczyk | Kraków, PL '19
 
 # --- hidden for now: delete the "#" to show one, and add a caption ---
-# 20171023_224110.jpg |  | Kraków, PL '17
-# 20190919_235229.jpg |  | Kraków, PL '19
 # 092-inekafe-zabili-mi-zolwia-64.jpg |  | 
 # 1534332_759099367434862_1388586623_n.jpg |  | 
 # 20140618_221359_re.jpg |  | 
