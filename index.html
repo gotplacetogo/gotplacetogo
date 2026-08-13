@@ -102,8 +102,11 @@
   .rec .rn{font-family:'Anton',sans-serif;font-size:clamp(20px,2.6vw,30px);color:var(--blood);line-height:1;text-transform:uppercase}
   .rec .rc{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);margin-top:6px}
 
+  .charts2{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin-top:42px}
+  .charts2 .label,.charts3 .label{display:block;margin-bottom:16px}
   .charts3{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:42px}
-  .charts3 .label{display:block;margin-bottom:16px}
+  .bar-row.compact{gap:8px}
+  .bar-row.compact .bar2 .bn2{margin-bottom:3px;font-size:12px}
   .byyear{margin-top:42px}
   .byyear-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
   .byyear .label{display:inline-block;margin:0}
@@ -118,10 +121,6 @@
   .bar2 .track2{height:12px;background:#241e1a;position:relative}
   .bar2 .fill2{height:100%;display:block}
   .bar2 .ct2{font-family:'Space Mono',monospace;color:var(--gold);text-align:right;font-size:12px}
-  .yr2-row{display:grid;grid-template-columns:46px 1fr 1fr;align-items:center;gap:22px;padding:9px 0;border-bottom:1px solid var(--ash)}
-  .yr2-label{font-family:'Anton',sans-serif;font-size:17px;color:var(--gold)}
-  .yr2-metric{display:grid;grid-template-columns:46px 1fr 26px;align-items:center;gap:9px}
-  .yr2-m-label{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 
   /* CHALLENGES */
   .challenge-intro{color:#cfc8bf;max-width:700px;margin-bottom:34px;font-size:15px}
@@ -184,8 +183,6 @@
   /* FAVORITES / HEAVY ROTATION */
   .fav-years{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
   .fav-years button{background:var(--concrete);border:1px solid var(--ash);border-left-width:4px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer}
-  .fav-years button .fy-ct{margin-left:7px;font-weight:700;opacity:.8}
-  .fav-years button.on .fy-ct{color:var(--ink);opacity:1}
   .fav-years button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
   .fav-cols{display:grid;grid-template-columns:1fr;gap:30px}
   .fav-col h4{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;color:var(--gold)}
@@ -366,10 +363,6 @@
     .stub{grid-template-columns:54px 1fr}
     .stub .tag{grid-column:2;justify-self:start}
     .bar{grid-template-columns:minmax(110px,46%) 1fr 26px}
-    .yr2-row{grid-template-columns:36px 1fr;grid-template-areas:"lbl s" "lbl b";row-gap:4px}
-    .yr2-label{grid-area:lbl}
-    .yr2-row .yr2-metric:nth-child(2){grid-area:s}
-    .yr2-row .yr2-metric:nth-child(3){grid-area:b}
   }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -465,7 +458,10 @@
         </div>
       </div>
       <div id="paneYear" style="display:none">
-        <div class="bar-row" id="byYear"></div>
+        <div class="charts2">
+          <div><span class="label" data-i18n="yr_shows">Shows by year</span><div class="bar-row compact" id="byYearShows"></div></div>
+          <div><span class="label" data-i18n="yr_bands">Bands by year</span><div class="bar-row compact" id="byYearBands"></div></div>
+        </div>
       </div>
     </div>
   </section>
@@ -1127,17 +1123,19 @@ function bandsByYear(){ const m={}; CONCERTS.forEach(r=>{ m[r.year]=(m[r.year]||
    if nothing happened that year), plus any earlier year that does have data - so the chart
    never has a confusing gap, but we don't invent decades of empty rows before you started. */
 const YEAR_FLOOR = 2000;
-function fullYearRows(){
+function yearRange(){
   const cy = new Date().getFullYear();
   const showsC = countRows(CONCERTS,'year');
   const bandC  = bandsByYear();
   const years = new Set();
   for(let y=YEAR_FLOOR;y<=cy;y++) years.add(y);
   Object.keys(showsC).concat(Object.keys(bandC)).forEach(y=>{ if(+y<YEAR_FLOOR) years.add(+y); });
-  return [...years].sort((a,b)=>a-b).map(y=>({year:y, shows:showsC[y]||0, bands:bandC[y]||0}));
+  return [...years].sort((a,b)=>a-b);
 }
 function renderByYear(){
-  renderYearSplit('byYear', fullYearRows());
+  const years=yearRange(), showsC=countRows(CONCERTS,'year'), bandC=bandsByYear();
+  renderBars('byYearShows', years.map(y=>[String(y), showsC[y]||0]), 'year');
+  renderBars('byYearBands', years.map(y=>[String(y), bandC[y]||0]), 'year');
 }
 function colorYear(r){ // high count -> gold, low -> orange/red
   const hue=Math.round(10+r*35), light=48+Math.round(r*8);
@@ -1146,38 +1144,14 @@ function colorYear(r){ // high count -> gold, low -> orange/red
 function renderBars(id, entries, mode, flags){
   const el=document.getElementById(id);
   if(!entries.length){ el.innerHTML=""; return; }
-  const max=Math.max(...entries.map(e=>e[1]));
+  const max=Math.max(1,...entries.map(e=>e[1]));
   el.innerHTML = entries.map(([name,ct])=>{
     const r=ct/max;
     const col = mode==='year' ? colorYear(r) : 'var(--gold)';   // top-10 = unified gold
     const fl = (flags && flags[name]) ? flagOf(flags[name]) : '';
     return `<div class="bar2">
       <div class="bn2">${fl?`<span class="bn-flag">${fl}</span>`:''}${name}</div>
-      <div class="row2"><span class="track2"><span class="fill2" style="width:${Math.max(7,r*100)}%;background:${col}"></span></span><span class="ct2">${ct}</span></div>
-    </div>`;
-  }).join("");
-}
-/* One row per year, shows on the left / bands on the right, same year on one line. */
-function renderYearSplit(id, rows){
-  const el=document.getElementById(id);
-  if(!rows.length){ el.innerHTML=""; return; }
-  const maxS=Math.max(1,...rows.map(r=>r.shows));
-  const maxB=Math.max(1,...rows.map(r=>r.bands));
-  el.innerHTML = rows.map(r=>{
-    const rs=r.shows/maxS, rb=r.bands/maxB;
-    const cs=r.shows?colorYear(rs):'transparent', cb=r.bands?colorYear(rb):'transparent';
-    return `<div class="yr2-row">
-      <div class="yr2-label">'${String(r.year).slice(2)}</div>
-      <div class="yr2-metric">
-        <span class="yr2-m-label">${t('yr_shows')}</span>
-        <span class="track2"><span class="fill2" style="width:${r.shows?Math.max(7,rs*100):0}%;background:${cs}"></span></span>
-        <span class="ct2">${r.shows}</span>
-      </div>
-      <div class="yr2-metric">
-        <span class="yr2-m-label">${t('yr_bands')}</span>
-        <span class="track2"><span class="fill2" style="width:${r.bands?Math.max(7,rb*100):0}%;background:${cb}"></span></span>
-        <span class="ct2">${r.bands}</span>
-      </div>
+      <div class="row2"><span class="track2"><span class="fill2" style="width:${ct?Math.max(7,r*100):0}%;background:${col}"></span></span><span class="ct2">${ct}</span></div>
     </div>`;
   }).join("");
 }
@@ -1540,8 +1514,7 @@ function renderFavorites(){
     const albumCount=rec&&rec.albums?rec.albums.length:0;
     const isOn=y===favYear;
     const border=isOn?'var(--gold)':(favTierColor(albumCount)||'#000');
-    const badge=albumCount?`<span class="fy-ct">${albumCount}</span>`:'';
-    return `<button data-y="${y}" class="${isOn?'on':''}" style="border-left-color:${border}">${y}${badge}</button>`;
+    return `<button data-y="${y}" class="${isOn?'on':''}" style="border-left-color:${border}">${y}</button>`;
   }).join('');
   document.querySelectorAll('#favYears button').forEach(b=>b.addEventListener('click',()=>{favYear=+b.dataset.y;renderFavorites();}));
   const f=FAVORITES.find(x=>x.year==favYear)||{albums:[],songs:[]};
