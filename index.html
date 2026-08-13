@@ -118,6 +118,10 @@
   .bar2 .track2{height:12px;background:#241e1a;position:relative}
   .bar2 .fill2{height:100%;display:block}
   .bar2 .ct2{font-family:'Space Mono',monospace;color:var(--gold);text-align:right;font-size:12px}
+  .yr2-row{display:grid;grid-template-columns:46px 1fr 1fr;align-items:center;gap:22px;padding:9px 0;border-bottom:1px solid var(--ash)}
+  .yr2-label{font-family:'Anton',sans-serif;font-size:17px;color:var(--gold)}
+  .yr2-metric{display:grid;grid-template-columns:46px 1fr 26px;align-items:center;gap:9px}
+  .yr2-m-label{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 
   /* CHALLENGES */
   .challenge-intro{color:#cfc8bf;max-width:700px;margin-bottom:34px;font-size:15px}
@@ -179,7 +183,9 @@
 
   /* FAVORITES / HEAVY ROTATION */
   .fav-years{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:26px}
-  .fav-years button{background:var(--concrete);border:1px solid var(--ash);color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer}
+  .fav-years button{background:var(--concrete);border:1px solid var(--ash);border-left-width:4px;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;padding:7px 12px;cursor:pointer}
+  .fav-years button .fy-ct{margin-left:7px;font-weight:700;opacity:.8}
+  .fav-years button.on .fy-ct{color:var(--ink);opacity:1}
   .fav-years button.on{background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700}
   .fav-cols{display:grid;grid-template-columns:1fr;gap:30px}
   .fav-col h4{font-family:'Anton',sans-serif;font-size:20px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;color:var(--gold)}
@@ -219,6 +225,7 @@
   .stub .yr{font-family:'Anton',sans-serif;font-size:26px;color:var(--gold)}
   .stub .dt{display:flex;flex-direction:column;line-height:1}
   .stub .mo{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .stub .tour{font-family:'Anton',sans-serif;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--gold);line-height:1.2;display:inline-block;margin-bottom:2px}
   .stub .bnd{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:.5px;text-transform:uppercase;line-height:1.05}
   .stub .ven{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted)}
   .stub .tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blood);border:1px dashed var(--ash);padding:4px 8px;white-space:nowrap}
@@ -298,7 +305,6 @@
   .hero .gtr{top:-30px;right:-54px;width:360px;height:124px;transform:scaleX(-1) rotate(19deg);opacity:.12;color:var(--blood)}
   footer{position:relative;overflow:hidden}
   footer .wrap{position:relative;z-index:2}
-  footer .skull{top:50%;left:50%;width:210px;height:230px;transform:translate(-50%,-48%);opacity:.07;color:var(--bone);z-index:0}
   footer .fg-l{bottom:-18px;left:3%;width:300px;height:104px;transform:rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
   footer .fg-r{bottom:-18px;right:3%;width:300px;height:104px;transform:scaleX(-1) rotate(-13deg);opacity:.10;color:var(--blood);z-index:0}
 
@@ -360,6 +366,10 @@
     .stub{grid-template-columns:54px 1fr}
     .stub .tag{grid-column:2;justify-self:start}
     .bar{grid-template-columns:minmax(110px,46%) 1fr 26px}
+    .yr2-row{grid-template-columns:36px 1fr;grid-template-areas:"lbl s" "lbl b";row-gap:4px}
+    .yr2-label{grid-area:lbl}
+    .yr2-row .yr2-metric:nth-child(2){grid-area:s}
+    .yr2-row .yr2-metric:nth-child(3){grid-area:b}
   }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -377,9 +387,6 @@
     <circle cx="182" cy="45" r="24"/><circle cx="210" cy="45" r="28"/>
    </g>
   </symbol>
-  <symbol id="i-skull" viewBox="0 0 100 110">
-   <path fill="currentColor" fill-rule="evenodd" d="M50 6 C26 6 12 24 12 48 C12 63 19 72 27 78 L27 88 C27 95 33 99 40 98 L41 90 L46 99 L54 99 L59 90 L60 98 C67 99 73 95 73 88 L73 78 C81 72 88 63 88 48 C88 24 74 6 50 6 Z M34 44 C28 44 25 51 30 56 C36 61 43 54 40 47 C39 45 37 44 34 44 Z M66 44 C60 44 57 51 62 56 C68 61 75 54 72 47 C71 45 69 44 66 44 Z M50 58 L43 70 L57 70 Z"/>
-  </symbol>
  </defs>
 </svg>
 
@@ -392,8 +399,7 @@
           <a href="#stats" data-i18n="nav_stats">The Numbers</a>
           <div class="drop">
             <a href="#stats" data-stat="top10" data-i18n="nav_top10">Top 10</a>
-            <a href="#stats" data-stat="shows" data-i18n="nav_byshows">Shows by year</a>
-            <a href="#stats" data-stat="bands" data-i18n="nav_bybands">Bands by year</a>
+            <a href="#stats" data-stat="year" data-i18n="nav_byyear">Shows/Bands by Year</a>
           </div>
         </div>
         <div class="nav-item has-drop">
@@ -558,6 +564,7 @@
         <p data-i18n="fav_desc">Favourite albums and songs, year by year.</p>
       </div>
       <div class="fav-years" id="favYears"></div>
+      <p class="fav-legend" data-i18n="fav_legend">Color = how many albums are locked in for that year - black is empty, green is all 5.</p>
       <div class="fav-cols" id="favCols"></div>
     </div>
   </section>
@@ -600,7 +607,6 @@
 </main>
 
 <footer>
-  <div class="deco skull"><svg><use href="#i-skull"/></svg></div>
   <div class="wrap">
     <div class="display">STAY LOUD</div>
     <p class="foot-note"><span data-i18n="foot_1">Built and maintained by one fan.</span> <span data-i18n="foot_2">Show data lives in a SharePoint list and feeds this page automatically.</span></p>
@@ -614,6 +620,12 @@
    list of bands you actually saw. Only rows with
    status:"Ready to Post" are counted.
    `bands` may be an array OR a delimited string ("A; B; C").
+   Optional fields (safe to omit - everything below degrades gracefully):
+     day            - day-of-month number, used as the final sort
+                       tiebreaker so same-month shows land in true order.
+     tour           - tour/festival name (e.g. "Poland Rock").
+     tourVisibility - ticked Yes in SharePoint to show `tour` as a gold
+                       line above the band names in Story of My Life.
    ============================================================ */
 const CONFIG = { DATA_URL:"data/concerts.json", PHOTOS_URL:"data/photos.txt", BUCKET_URL:"data/wishlist.txt", FAV_URL:"data/favourites.txt", PLAYLIST_URL:"data/playlists.txt", COMPS_URL:"" };   // JSON written by Power Automate into the repo's /data folder; missing files fall back to embedded data
 
@@ -728,7 +740,7 @@ let COMPS = [
 /* ===================== TRANSLATIONS ===================== */
 const I18N = {
   en:{
-    nav_stats:"The Numbers", nav_shows:"The Journal", nav_hunt:"The Hunt", nav_top10:"Top 10", nav_byshows:"Shows by Year", nav_bybands:"Bands by Year", nav_map:"Map", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama Challenge", nav_about:"About", nav_bucket:"Bands to See", nav_fav:"The Best Of",
+    nav_stats:"The Numbers", nav_shows:"The Journal", nav_hunt:"The Hunt", nav_top10:"Top 10", nav_byshows:"Shows by Year", nav_bybands:"Bands by Year", nav_byyear:"Shows/Bands by Year", nav_map:"Map", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama Challenge", nav_about:"About", nav_bucket:"Bands to See", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
     stats_title:"The Number of the Beast", stats_desc:"Quantity was never the goal - but every show leaves me hungry for one more. So I keep going: new bands, the bands I love, the bands I've seen a dozen times. It makes me genuinely happy to watch these talented people who decided to spend their lives turning their music into the soundtrack of ours. Still - here it is, my whole concert life in numbers 🤘😎",
@@ -738,7 +750,7 @@ const I18N = {
     quotes_title:"Scream It Back", quotes_kick:"My favourite lines", quotes_empty:"Add your favourite lines in the quotes list - they'll roll through here.",
     fav_title:"All Killer No Filler", fav_kick:"Sum 41", fav_desc:"I love a thousand songs and a hundred records - but these are the ones I keep crawling back to. The albums that wired themselves into who I am, that soundtracked the moments that actually mattered, and still hit just as hard today. The few I'd save from a zombie apocalypse. All killers, no fillers.",
     fav_albums:"Albums", fav_songs:"Songs", fav_year:"Year",
-    tab_top10:"Top 10", yr_shows:"Shows by year", yr_bands:"Bands by year", stats_byyear:"By year",
+    tab_top10:"Top 10", yr_shows:"Shows by year", yr_bands:"Bands by year", yr_byyear:"Shows / Bands by Year", stats_byyear:"By year",
     hero_eyebrow:"A live-music field journal",
     hero_sub:"Music isn't just a part of my life - it's the raw energy that fuels it. The constant companion that drives my journey, the rhythm that keeps me moving forward. Because “when I've got the music, I've got a place to go.”",
     st_shows:"Total shows", st_bands:"Bands seen", st_venues:"Venues", st_cities:"Cities", st_countries:"Countries", st_years:"Years active",
@@ -775,7 +787,7 @@ const I18N = {
     foot_1:"Built and maintained by one fan.", foot_2:"Show data lives in a SharePoint list and feeds this page automatically."
   },
   pl:{
-    nav_stats:"Liczby", nav_shows:"Dziennik", nav_hunt:"Poszukiwany/Poszukiwana", nav_top10:"Top 10", nav_byshows:"Koncerty wg roku", nav_bybands:"Zespoły wg roku", nav_map:"Mapa", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama", nav_about:"O mnie", nav_bucket:"Na celowniku", nav_fav:"The Best Of",
+    nav_stats:"Liczby", nav_shows:"Dziennik", nav_hunt:"Poszukiwany/Poszukiwana", nav_top10:"Top 10", nav_byshows:"Koncerty wg roku", nav_bybands:"Zespoły wg roku", nav_byyear:"Koncerty/Zespoły wg roku", nav_map:"Mapa", nav_ledger:"Story of My Life", nav_photos:"The Memory Remains", nav_por:"Punk-O-Rama", nav_about:"O mnie", nav_bucket:"Na celowniku", nav_fav:"The Best Of",
     kick_stats:"Iron Maiden", kick_map:"Bad Religion",
     kick_ledger:"Social Distortion", kick_photos:"Metallica", kick_por:"Rancid",
     stats_title:"The Number of the Beast", stats_desc:"Ilość nigdy nie była celem - ale po każdym koncercie apetyt tylko rośnie. Więc jadę dalej: nowe zespoły, te, które kocham, te, które widziałem już dziesięć razy. Naprawdę cieszy mnie oglądanie na żywo tych utalentowanych ludzi, którzy poświęcili życie, żeby ich muzyka stała się ścieżką dźwiękową naszego. A jednak - oto całe moje koncertowe życie w liczbach 🤘😎",
@@ -785,7 +797,7 @@ const I18N = {
     quotes_title:"Scream It Back", quotes_kick:"Moje ulubione wersy", quotes_empty:"Dodaj swoje ulubione wersy do listy cytatów - pojawią się tutaj.",
     fav_title:"All Killer No Filler", fav_kick:"Sum 41", fav_desc:"Kocham tysiąc piosenek i setkę płyt - ale to są te, do których wracam bez końca. Albumy, które wrosły w to, kim jestem, które były ścieżką dźwiękową chwil, które naprawdę się liczyły, i wciąż uderzają tak samo mocno. Te kilka, które wyniósłbym z zombie-apokalipsy. All killers, no fillers.",
     fav_albums:"Albumy", fav_songs:"Piosenki", fav_year:"Rok",
-    tab_top10:"Top 10", yr_shows:"Koncerty wg roku", yr_bands:"Zespoły wg roku", stats_byyear:"Wg roku",
+    tab_top10:"Top 10", yr_shows:"Koncerty wg roku", yr_bands:"Zespoły wg roku", yr_byyear:"Koncerty / Zespoły wg roku", stats_byyear:"Wg roku",
     hero_eyebrow:"Dziennik koncertowy z pierwszej linii",
     hero_sub:"Muzyka to nie tylko część mojego życia - to czysta energia, która je napędza. Stały towarzysz mojej drogi, rytm, który pcha mnie naprzód. Bo „when I've got the music, I've got a place to go”.",
     st_shows:"Koncerty łącznie", st_bands:"Widziane zespoły", st_venues:"Miejsca", st_cities:"Miasta", st_countries:"Kraje", st_years:"Lata aktywności",
@@ -828,6 +840,7 @@ const I18N = {
     nav_top10:"Top 10",
     nav_byshows:"Shows por año",
     nav_bybands:"Bandas por año",
+    nav_byyear:"Shows/Bandas por año",
     nav_map:"El Mapa",
     nav_ledger:"Story of My Life",
     nav_photos:"The Memory Remains",
@@ -857,6 +870,7 @@ const I18N = {
     tab_top10:"Top 10",
     yr_shows:"Shows por año",
     yr_bands:"Bandas por año",
+    yr_byyear:"Shows / Bandas por año",
     stats_topbands:"Top 10 bandas",
     stats_topvenues:"Top 10 salas",
     stats_topcities:"Top 10 ciudades",
@@ -1031,6 +1045,13 @@ function normalize(rows){
 function sortDesc(obj){ return Object.entries(obj).sort((a,b)=>b[1]-a[1] || String(a[0]).localeCompare(String(b[0]))); }
 function countRows(rows,key){ const m={}; rows.forEach(r=>{ const v=r[key]; if(v==null||v==="") return; m[v]=(m[v]||0)+1; }); return m; }
 function countBands(rows){ const m={}; rows.forEach(r=>r.bands.forEach(b=>{ m[b]=(m[b]||0)+1; })); return m; }
+/* How many times a band was the headliner (first name listed) - used only to break ties
+   in Top 10 bands, so equal-count bands sort by "how often was this the main act you went
+   for" rather than A-Z. */
+function countHeadliners(rows){ const m={}; rows.forEach(r=>{ if(r.bands&&r.bands.length){ const b=r.bands[0]; m[b]=(m[b]||0)+1; } }); return m; }
+function sortBandsDesc(bandC, headC){
+  return Object.entries(bandC).sort((a,b)=> b[1]-a[1] || ((headC[b[0]]||0)-(headC[a[0]]||0)) || String(a[0]).localeCompare(String(b[0])));
+}
 
 /* ===================== STATS ===================== */
 function renderStats(){
@@ -1066,21 +1087,21 @@ function renderStats(){
     if(r.venue && r.country && !venueCC[r.venue]) venueCC[r.venue]=r.country;
     if(r.city  && r.country && !cityCC[r.city])   cityCC[r.city]=r.country;
   });
-  renderBars("topBands", sortDesc(bandC).slice(0,10));
+  renderBars("topBands", sortBandsDesc(bandC, countHeadliners(CONCERTS)).slice(0,10));
   renderBars("topVenues", sortDesc(venC).slice(0,10), null, venueCC);
   renderBars("topCities", sortDesc(cityC).slice(0,10), null, cityCC);
   renderStatTab();
 }
 let statTab='top10';
 function renderStatTab(){
-  const tabs=[['top10',t('tab_top10')],['shows',t('yr_shows')],['bands',t('yr_bands')]];
+  const tabs=[['top10',t('tab_top10')],['year',t('yr_byyear')]];
   document.getElementById('statTabs').innerHTML = tabs.map(([k,lbl])=>
     `<button data-st="${k}" class="${statTab===k?'on':''}">${lbl}</button>`).join('');
   document.querySelectorAll('#statTabs button').forEach(b=>b.addEventListener('click',()=>{statTab=b.dataset.st;renderStatTab();}));
   const top = statTab==='top10';
   document.getElementById('paneTop10').style.display = top?'':'none';
   document.getElementById('paneYear').style.display = top?'none':'';
-  if(!top){ yearMode = statTab; renderByYear(); }
+  if(!top){ renderByYear(); }
 }
 function reducedMotion(){ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 let recTimer=null, recTies={};
@@ -1101,12 +1122,22 @@ function renderRecords(bandC, venC, cityC){
     }); }, 2800);
   }
 }
-let yearMode='shows';
 function bandsByYear(){ const m={}; CONCERTS.forEach(r=>{ m[r.year]=(m[r.year]||0)+r.bands.length; }); return m; }
+/* Guarantees an unbroken row for every year from YEAR_FLOOR to the current year (0-filled
+   if nothing happened that year), plus any earlier year that does have data - so the chart
+   never has a confusing gap, but we don't invent decades of empty rows before you started. */
+const YEAR_FLOOR = 2000;
+function fullYearRows(){
+  const cy = new Date().getFullYear();
+  const showsC = countRows(CONCERTS,'year');
+  const bandC  = bandsByYear();
+  const years = new Set();
+  for(let y=YEAR_FLOOR;y<=cy;y++) years.add(y);
+  Object.keys(showsC).concat(Object.keys(bandC)).forEach(y=>{ if(+y<YEAR_FLOOR) years.add(+y); });
+  return [...years].sort((a,b)=>a-b).map(y=>({year:y, shows:showsC[y]||0, bands:bandC[y]||0}));
+}
 function renderByYear(){
-  const data = yearMode==='bands' ? bandsByYear() : countRows(CONCERTS,'year');
-  const entries = Object.entries(data).sort((a,b)=>a[0]-b[0]);
-  renderBars('byYear', entries, 'year');
+  renderYearSplit('byYear', fullYearRows());
 }
 function colorYear(r){ // high count -> gold, low -> orange/red
   const hue=Math.round(10+r*35), light=48+Math.round(r*8);
@@ -1123,6 +1154,30 @@ function renderBars(id, entries, mode, flags){
     return `<div class="bar2">
       <div class="bn2">${fl?`<span class="bn-flag">${fl}</span>`:''}${name}</div>
       <div class="row2"><span class="track2"><span class="fill2" style="width:${Math.max(7,r*100)}%;background:${col}"></span></span><span class="ct2">${ct}</span></div>
+    </div>`;
+  }).join("");
+}
+/* One row per year, shows on the left / bands on the right, same year on one line. */
+function renderYearSplit(id, rows){
+  const el=document.getElementById(id);
+  if(!rows.length){ el.innerHTML=""; return; }
+  const maxS=Math.max(1,...rows.map(r=>r.shows));
+  const maxB=Math.max(1,...rows.map(r=>r.bands));
+  el.innerHTML = rows.map(r=>{
+    const rs=r.shows/maxS, rb=r.bands/maxB;
+    const cs=r.shows?colorYear(rs):'transparent', cb=r.bands?colorYear(rb):'transparent';
+    return `<div class="yr2-row">
+      <div class="yr2-label">'${String(r.year).slice(2)}</div>
+      <div class="yr2-metric">
+        <span class="yr2-m-label">${t('yr_shows')}</span>
+        <span class="track2"><span class="fill2" style="width:${r.shows?Math.max(7,rs*100):0}%;background:${cs}"></span></span>
+        <span class="ct2">${r.shows}</span>
+      </div>
+      <div class="yr2-metric">
+        <span class="yr2-m-label">${t('yr_bands')}</span>
+        <span class="track2"><span class="fill2" style="width:${r.bands?Math.max(7,rb*100):0}%;background:${cb}"></span></span>
+        <span class="ct2">${r.bands}</span>
+      </div>
     </div>`;
   }).join("");
 }
@@ -1148,7 +1203,7 @@ function renderMap(){
   const icon = L.divIcon({className:'',html:'<div class="pin"></div>',iconSize:[14,14],iconAnchor:[7,14]});
   const pts=[];
   Object.values(byLoc).forEach(g=>{
-    const list=g.shows.slice().sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0))
+    const list=g.shows.slice().sort((a,b)=>b.year-a.year || (b.month||0)-(a.month||0) || (b.day||0)-(a.day||0))
       .map(s=>`${s.bands.join(', ')} (${s.month?moAbbr(s.month)+' ':''}${s.year})`).join('<br>');
     const place=[g.city,g.country].filter(Boolean).join(', ');
     const m=L.marker([g.lat,g.lng],{icon}).addTo(map)
@@ -1190,6 +1245,14 @@ function flagOf(cc){
   const up=c.toUpperCase();
   return `<img class="flag-img" src="https://flagcdn.com/w40/${c}.png" alt="${up}" title="${up}" loading="lazy" onerror="this.replaceWith(document.createTextNode('${up}'))">`;
 }
+/* Tour name shows only when the "Tour Visibility" flag is ticked Yes in SharePoint
+   AND a Tour name is actually filled in - lets you call out select festivals/tours
+   (e.g. Poland Rock) without cluttering every regular show. */
+function showTour(r){
+  const v=r&&r.tourVisibility;
+  const on = v===true || v===1 || /^(y|true|1)/i.test(String(v==null?'':v).trim());
+  return on && String((r&&r.tour)||'').trim().length>0;
+}
 function renderLedger(){
   const q=document.getElementById("search").value.toLowerCase();
   const fb=document.getElementById("fBand").value, fv=document.getElementById("fVenue").value, fy=document.getElementById("fYear").value;
@@ -1202,7 +1265,7 @@ function renderLedger(){
   const all = [
     ...PLANNED.filter(match).map(c=>({c, plan:true})),
     ...CONCERTS.filter(match).map(c=>({c, plan:false}))
-  ].sort((a,b)=> (b.c.year-a.c.year) || ((b.c.month||0)-(a.c.month||0)) || a.c.venue.localeCompare(b.c.venue));
+  ].sort((a,b)=> (b.c.year-a.c.year) || ((b.c.month||0)-(a.c.month||0)) || ((b.c.day||0)-(a.c.day||0)) || a.c.venue.localeCompare(b.c.venue));
 
   const list=document.getElementById("stubList");
   if(!all.length){ list.innerHTML=`<div class="empty">- nothing matches -</div>`; return; }
@@ -1211,9 +1274,10 @@ function renderLedger(){
     const tag = plan ? `<span class="tag plan">◎ ${t('planned_tag')}</span>`
                      : `<span class="tag">${c.bands.length} ${c.bands.length>1?'bands':'band'}</span>`;
     const fl=flagOf(c.country);
+    const tourLine = showTour(c) ? `<span class="tour">${c.tour}</span><br>` : '';
     return `<div class="stub${plan?' planned':''}">
        <span class="dt">${c.month?`<span class="mo">${moAbbr(c.month)}</span>`:''}<span class="yr">'${String(c.year).slice(2)}</span></span>
-       <span><span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${place}</span></span>
+       <span>${tourLine}<span class="bnd">${c.bands.join(' · ')}</span><br><span class="ven">${place}</span></span>
        <span class="stub-end">${tag}<span class="flag" title="${c.country||''}">${fl||'·'}</span></span>
      </div>`;
   }).join("");
@@ -1451,17 +1515,43 @@ function renderBucket(){
 
 /* ===================== FAVOURITES / QUOTES ===================== */
 let favYear=null;
+const FAV_YEAR_FLOOR=1990;   // guaranteed range: 1990 -> current year. Earlier years only show up if you've actually added something.
+function favYearRange(){
+  const cy=new Date().getFullYear();
+  const dataYears=new Set(FAVORITES.map(f=>+f.year));
+  const years=new Set();
+  for(let y=FAV_YEAR_FLOOR;y<=cy;y++) years.add(y);
+  dataYears.forEach(y=>{ if(y<FAV_YEAR_FLOOR) years.add(y); });
+  return [...years].sort((a,b)=>b-a);
+}
+/* Album-count -> color tier: none=black/empty, 1=red ... 5(or more)=green. */
+function favTierColor(n){
+  if(!n) return null;
+  const hue=Math.round((Math.min(n,5)-1)/4*120);   // 0=red -> 120=green
+  return `hsl(${hue},70%,46%)`;
+}
 function renderFavorites(){
   if(!FAVORITES.length){ document.getElementById('favYears').innerHTML=''; document.getElementById('favCols').innerHTML=''; return; }
-  const years=[...new Set(FAVORITES.map(f=>f.year))].sort((a,b)=>b-a);
-  if(favYear===null || !years.includes(favYear)) favYear=years[0];
-  document.getElementById('favYears').innerHTML=years.map(y=>`<button data-y="${y}" class="${y==favYear?'on':''}">${y}</button>`).join('');
+  const years=favYearRange();
+  const yearsWithData=years.filter(y=>FAVORITES.some(f=>+f.year===y));
+  if(favYear===null || !years.includes(favYear)) favYear = yearsWithData.length ? yearsWithData[0] : years[0];
+  document.getElementById('favYears').innerHTML=years.map(y=>{
+    const rec=FAVORITES.find(f=>+f.year===y);
+    const albumCount=rec&&rec.albums?rec.albums.length:0;
+    const isOn=y===favYear;
+    const border=isOn?'var(--gold)':(favTierColor(albumCount)||'#000');
+    const badge=albumCount?`<span class="fy-ct">${albumCount}</span>`:'';
+    return `<button data-y="${y}" class="${isOn?'on':''}" style="border-left-color:${border}">${y}${badge}</button>`;
+  }).join('');
   document.querySelectorAll('#favYears button').forEach(b=>b.addEventListener('click',()=>{favYear=+b.dataset.y;renderFavorites();}));
   const f=FAVORITES.find(x=>x.year==favYear)||{albums:[],songs:[]};
-  const col=(title,items)=>`<div class="fav-col"><h4>${title}</h4>`+
-    ((items&&items.length)?items.map((it,i)=>
-      `<div class="fav-item"><span class="fr">${i+1}</span><span class="fav-txt"><span class="fline"><span class="fa">${it.artist}</span> - <span class="ft">${it.title}</span></span>${it.why?`<span class="fw">${it.why}</span>`:''}</span></div>`
-    ).join(''):`<div class="fav-empty">-</div>`)+`</div>`;
+  const col=(title,items)=>{
+    if(!items||!items.length) return '';   // nothing added this year -> skip the whole section, no empty header
+    return `<div class="fav-col"><h4>${title}</h4>`+
+      items.map((it,i)=>
+        `<div class="fav-item"><span class="fr">${i+1}</span><span class="fav-txt"><span class="fline"><span class="fa">${it.artist}</span> - <span class="ft">${it.title}</span></span>${it.why?`<span class="fw">${it.why}</span>`:''}</span></div>`
+      ).join('')+`</div>`;
+  };
   document.getElementById('favCols').innerHTML=col(t('fav_albums'),f.albums)+col(t('fav_songs'),f.songs);
 }
 
