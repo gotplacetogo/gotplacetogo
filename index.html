@@ -122,23 +122,22 @@
   .bar2 .fill2{height:100%;display:block}
   .bar2 .ct2{font-family:'Space Mono',monospace;color:var(--gold);text-align:right;font-size:12px}
 
-  .yr3-legend{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin:18px 0 24px;font-family:'Space Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-  .yr3-legend .sw{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px}
-  .yr3-legend .sw-silver{background:#B9C0C6}
-  .yr3-legend .sw-gold{background:var(--gold)}
-  .yr3-legend-medals{color:var(--muted);letter-spacing:0;text-transform:none;font-size:11px}
-  .yr3-row{display:grid;grid-template-columns:88px 1fr;align-items:center;gap:24px;padding:14px 0;border-bottom:1px solid var(--ash)}
-  .yr3-year{display:flex;flex-direction:column;align-items:center;gap:5px}
-  .yr3-num{font-family:'Anton',sans-serif;font-size:30px;color:var(--gold);letter-spacing:.5px;line-height:1}
-  .yr3-medals{min-height:16px;font-size:14px;letter-spacing:1px}
-  .yr3-bars{display:flex;flex-direction:column;gap:9px}
-  .yr3-bar-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
-  .yr3-mlabel{font-family:'Space Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-  .yr3-count{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--bone)}
-  .track3{height:8px;background:#241e1a;border-radius:2px;overflow:hidden}
-  .fill3{height:100%;display:block;border-radius:2px}
-  .fill-silver{background:#B9C0C6}
-  .fill-gold{background:var(--gold)}
+  .yr6-stage{display:grid;margin-top:6px}
+  .yr6-panel{grid-area:1/1;opacity:0;pointer-events:none;transition:opacity .35s ease}
+  .yr6-panel.active{opacity:1;pointer-events:auto}
+  .yr4-wrap{overflow-x:auto;padding-bottom:12px;scrollbar-color:var(--blood) #241e1a;scrollbar-width:thin}
+  .yr4-wrap::-webkit-scrollbar{height:9px}
+  .yr4-wrap::-webkit-scrollbar-track{background:#241e1a}
+  .yr4-wrap::-webkit-scrollbar-thumb{background:var(--blood);border-radius:5px}
+  .yr4-wrap::-webkit-scrollbar-thumb:hover{background:#ff2233}
+  .yr5-row{display:flex;align-items:flex-end;gap:12px;min-width:max-content;padding:4px 4px 0}
+  .yr5-col{display:flex;flex-direction:column;align-items:center;width:32px;flex:0 0 auto}
+  .yr5-count{margin-bottom:8px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--bone);white-space:nowrap}
+  .yr5-track{width:16px;height:340px;display:flex;align-items:flex-end;background:#241e1a;border-radius:2px 2px 0 0;overflow:hidden}
+  .yr5-bar{width:100%;border-radius:2px 2px 0 0;transition:height .45s cubic-bezier(.22,.85,.32,1)}
+  .yr5-bar.silver{background:#B9C0C6}
+  .yr5-bar.gold{background:var(--gold)}
+  .yr5-year{margin-top:10px;font-family:'Anton',sans-serif;font-size:14px;color:var(--gold);letter-spacing:.3px}
 
   /* CHALLENGES */
   .challenge-intro{color:#cfc8bf;max-width:700px;margin-bottom:34px;font-size:15px}
@@ -381,8 +380,8 @@
     .stub{grid-template-columns:54px 1fr}
     .stub .tag{grid-column:2;justify-self:start}
     .bar{grid-template-columns:minmax(110px,46%) 1fr 26px}
-    .yr3-row{grid-template-columns:1fr;gap:8px;text-align:left}
-    .yr3-year{flex-direction:row;justify-content:flex-start;gap:10px}
+    .yr5-track{height:220px}
+    .yr5-col{width:28px}
   }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -412,7 +411,8 @@
           <a href="#stats" data-i18n="nav_stats">The Numbers</a>
           <div class="drop">
             <a href="#stats" data-stat="top10" data-i18n="nav_top10">Top 10</a>
-            <a href="#stats" data-stat="year" data-i18n="nav_byyear">Shows/Bands by Year</a>
+            <a href="#stats" data-stat="shows" data-i18n="nav_byshows">Shows by Year</a>
+            <a href="#stats" data-stat="bands" data-i18n="nav_bybands">Bands by Year</a>
           </div>
         </div>
         <div class="nav-item has-drop">
@@ -478,12 +478,10 @@
         </div>
       </div>
       <div id="paneYear" style="display:none">
-        <div class="yr3-legend">
-          <span><span class="sw sw-silver"></span> <span data-i18n="yr_shows">Shows by year</span></span>
-          <span><span class="sw sw-gold"></span> <span data-i18n="yr_bands">Bands by year</span></span>
-          <span class="yr3-legend-medals">🥇🥈🥉 <span data-i18n="yr_medals_note">top 3 years, shows and bands ranked separately</span></span>
+        <div class="yr6-stage" id="yr6Stage">
+          <div class="yr6-panel active" id="panelShows"><div id="byYearShows"></div></div>
+          <div class="yr6-panel" id="panelBands"><div id="byYearBands"></div></div>
         </div>
-        <div id="byYear"></div>
       </div>
     </div>
   </section>
@@ -1112,14 +1110,14 @@ function renderStats(){
 }
 let statTab='top10';
 function renderStatTab(){
-  const tabs=[['top10',t('tab_top10')],['year',t('yr_byyear')]];
+  const tabs=[['top10',t('tab_top10')],['shows',t('yr_shows')],['bands',t('yr_bands')]];
   document.getElementById('statTabs').innerHTML = tabs.map(([k,lbl])=>
     `<button data-st="${k}" class="${statTab===k?'on':''}">${lbl}</button>`).join('');
   document.querySelectorAll('#statTabs button').forEach(b=>b.addEventListener('click',()=>{statTab=b.dataset.st;renderStatTab();}));
   const top = statTab==='top10';
   document.getElementById('paneTop10').style.display = top?'':'none';
   document.getElementById('paneYear').style.display = top?'none':'';
-  if(!top){ renderByYear(); }
+  if(!top){ renderByYear(); showYearMetric(statTab); }
 }
 function reducedMotion(){ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
 let recTimer=null, recTies={};
@@ -1155,41 +1153,41 @@ function yearRange(){
   return [...years].sort((a,b)=>a-b);
 }
 function renderByYear(){
-  const years=yearRange(), showsC=countRows(CONCERTS,'year'), bandC=bandsByYear();
-  const rows = years.map(y=>({year:y, shows:showsC[y]||0, bands:bandC[y]||0}));
-  const maxS=Math.max(1,...rows.map(r=>r.shows));
-  const maxB=Math.max(1,...rows.map(r=>r.bands));
-  const MEDALS=['🥇','🥈','🥉'];
-  // Rank years by each metric independently (0 counts never medal) - "best year" for shows
-  // and "best year" for bands can be two different years, so each gets its own ranking.
-  const rankOf = (rows, key) => {
-    const ranked = rows.filter(r=>r[key]>0).slice().sort((a,b)=>b[key]-a[key]);
-    const m={}; ranked.slice(0,3).forEach((r,i)=>{ m[r.year]=i; }); return m;
-  };
-  const showRank=rankOf(rows,'shows'), bandRank=rankOf(rows,'bands');
-  const el=document.getElementById('byYear');
-  if(!rows.length){ el.innerHTML=""; return; }
-  el.innerHTML = rows.slice().reverse().map(r=>{
-    const rs=r.shows/maxS, rb=r.bands/maxB;
-    const sMedal = showRank[r.year]!=null ? `<span class="yr3-medal" title="${t('yr_shows')}">${MEDALS[showRank[r.year]]}</span>` : '';
-    const bMedal = bandRank[r.year]!=null ? `<span class="yr3-medal" title="${t('yr_bands')}">${MEDALS[bandRank[r.year]]}</span>` : '';
-    return `<div class="yr3-row">
-      <div class="yr3-year">
-        <span class="yr3-num">'${String(r.year).slice(2)}</span>
-        <span class="yr3-medals">${sMedal}${bMedal}</span>
-      </div>
-      <div class="yr3-bars">
-        <div class="yr3-bar-block">
-          <div class="yr3-bar-head"><span class="yr3-mlabel">${t('yr_shows')}</span><span class="yr3-count">${r.shows}</span></div>
-          <div class="track3"><div class="fill3 fill-silver" style="width:${r.shows?Math.max(4,rs*100):0}%"></div></div>
-        </div>
-        <div class="yr3-bar-block">
-          <div class="yr3-bar-head"><span class="yr3-mlabel">${t('yr_bands')}</span><span class="yr3-count">${r.bands}</span></div>
-          <div class="track3"><div class="fill3 fill-gold" style="width:${r.bands?Math.max(4,rb*100):0}%"></div></div>
-        </div>
-      </div>
+  const years=yearRange().slice().reverse();   // newest first, so the current year is visible without scrolling
+  const showsC=countRows(CONCERTS,'year'), bandC=bandsByYear();
+  const maxS=Math.max(1,...years.map(y=>showsC[y]||0));
+  const maxB=Math.max(1,...years.map(y=>bandC[y]||0));
+  renderYearChart('byYearShows', years, y=>showsC[y]||0, maxS, 'silver');
+  renderYearChart('byYearBands', years, y=>bandC[y]||0, maxB, 'gold');
+}
+function renderYearChart(id, years, getVal, max, colorClass){
+  const el=document.getElementById(id);
+  if(!years.length){ el.innerHTML=""; return; }
+  const cols = years.map(y=>{
+    const v=getVal(y), r=v/max;
+    const h = v?Math.max(3,r*100):0;
+    return `<div class="yr5-col">
+      <div class="yr5-count">${v}</div>
+      <div class="yr5-track"><div class="yr5-bar ${colorClass}" data-h="${h}" style="height:0%"></div></div>
+      <div class="yr5-year">'${String(y).slice(2)}</div>
     </div>`;
   }).join('');
+  el.innerHTML = `<div class="yr4-wrap"><div class="yr5-row">${cols}</div></div>`;
+}
+/* Crossfades between the Shows/Bands panels while their bars shrink out and grow back in,
+   so switching between the two top-level tabs reads as one fluid animation instead of a
+   hard content swap. Driven directly by statTab ('shows' or 'bands'). */
+function showYearMetric(metric){
+  const panels={shows:document.getElementById('panelShows'), bands:document.getElementById('panelBands')};
+  const activeP=panels[metric], otherP=panels[metric==='shows'?'bands':'shows'];
+  if(otherP.classList.contains('active')){
+    otherP.classList.remove('active');
+    otherP.querySelectorAll('.yr5-bar').forEach(b=>{ b.style.height='0%'; });
+  }
+  activeP.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    activeP.querySelectorAll('.yr5-bar').forEach(b=>{ b.style.height=(b.dataset.h||0)+'%'; });
+  }));
 }
 function colorYear(r){ // high count -> gold, low -> orange/red
   const hue=Math.round(10+r*35), light=48+Math.round(r*8);
