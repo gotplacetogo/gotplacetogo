@@ -23,8 +23,8 @@ IMAG0945.jpg | Chris Barker (Chris No. 2) [Anti-Flag]  | Kraków [Poland] '13
 20220218_230441.jpg | Wojciech Hoffman (Turbo, Orgasmotron) | Kraków [Poland] '22
 20220218_231225.jpg | Tomasz "Titus" Pukacki (Acid Drinkers, Orgasmotron) | Kraków [Poland] '22
 20221211_231724.jpg | Nocny Kochanek | Kraków [Poland] '21
-IMG_6891.jpg | Stigma (Agnostic Front) | Atlanta [USA] '24
-IMG_6893.jpg | Jimmy G. (Murphy's Law) | Atlanta [USA] '24
+IMG_6891.JPEG | Stigma (Agnostic Front) | Atlanta [USA] '24
+IMG_6893.JPEG | Jimmy G. (Murphy's Law) | Atlanta [USA] '24
 
 # --- hidden for now: delete the "#" to show one, and add a caption ---
 # 092-inekafe-zabili-mi-zolwia-64.jpg |  | 
