@@ -16,13 +16,13 @@ Black Label Society | Name in Blood
 Halestorm | Everest
 
 2024 album
-Nothing More - Carnal
+Nothing More | Carnal
 
 2019 album
-Tool — Fear Inoculum
+Tool | Fear Inoculum
 
 2018 album
-A Perfect Circle — Eat the Elephant
+A Perfect Circle | Eat the Elephant
 
 2015 album
 Halestorm | Into the Wild Life
@@ -34,19 +34,19 @@ Puscifer | Money Shot
 Halestorm | The Strange Case Of..
 
 2010 album
-Luxtorpeda — Luxtorpeda
+Luxtorpeda | Luxtorpeda
 
 2008 album
-Rise Against — Appeal to Reason
+Rise Against | Appeal to Reason
 
 2008 album
 Airbourne — Runnin' Wild
 
 2007 song
-Foo Fighters — The Pretender
+Foo Fighters | The Pretender
 
 2007 album
-Foo Fighters — Echoes, Silence, Patience & Grace
+Foo Fighters | Echoes, Silence, Patience & Grace
 
 2007 album
 Against Me! | New Wave
@@ -85,10 +85,10 @@ Coma | Pierwsze wyjście z mroku
 A Perfect Circle | Thirteenth Step
 
 2003 album
-Linkin Park — Meteora
+Linkin Park | Meteora
 
 2003 album
-AFI — Sing the Sorrow
+AFI | Sing the Sorrow
 
 2003 album
 Placebo | Sleeping with Ghosts
@@ -136,7 +136,7 @@ Papa Roach | Infest
 AFI | All Hallow's E.P.
 
 1999 album
-Rage Against the Machine — The Battle of Los Angeles
+Rage Against the Machine | The Battle of Los Angeles
 
 1998 album
 The Offspring | Americana
@@ -145,7 +145,7 @@ The Offspring | Americana
 Bad Religion | No Substance
 
 1998 album
-Rancid — Life Won't Wait
+Rancid | Life Won't Wait
 
 1998 album
 Kult | Ostateczny krach systemu korporacji
@@ -163,7 +163,7 @@ The Offspring | Ixnay on the Hombre
 Pidżama Porno | Złodzieje Zapalniczek
 
 1997 album
-Foo Fighters — The Colour and the Shape
+Foo Fighters | The Colour and the Shape
 
 1996 album
 Pidżama Porno | Futurista
@@ -190,10 +190,13 @@ Various Artists | Punk-O-Rama Vol. 1
 Pearl Jam | Vs.
 
 1992 album
+Rage Against the Machine | Rage Against the Machine
+
+1992 album
 Alice in Chains | Dirt
 
 1992 album
-Rage Against the Machine | Rage Against the Machine
+Tool | Undertow
 
 1992 album
 W.A.S.P. | The Crimson Idol
